@@ -1,13 +1,12 @@
 const initialState = {
-    isConnected: 'disconnected',
+    connectionStatus: '',
 }
 
 const checkConnection = (state = initialState, action) => {
     switch (action.type) {
         case 'GET_STATUS_CONNECTION_FULFILLED':
             return {
-                ...state,
-                isConnected: action.payload,
+                connectionStatus: action.payload,
             }
 
         default:

@@ -4,39 +4,24 @@ import { compose } from "redux";
 import { connect } from 'react-redux';
 import { checkConnection } from './Redux/action/checkConnection'
 import firebase from './Firebase'
+import Home from './Pages/Home';
+import Barang from './Pages/Barang';
+
 
 const App = (props) => {
-  const [MultiTab, setMultiTab] = useState(false)
-  const [Unsupported, setUnsupported] = useState(false)
-  const [Disconnected, setDisconnected] = useState(false)
+  // const [MultiTab, setMultiTab] = useState(false)
+  // const [Unsupported, setUnsupported] = useState(false)
 
   useEffect(() => {
-    enablePersistence()
+    // enablePersistence()
     window.addEventListener('online', handleConnectionChange)
     window.addEventListener('offline', handleConnectionChange);
+    handleConnectionChange()
     return () => {
       window.removeEventListener('online', handleConnectionChange)
       window.removeEventListener('offline', handleConnectionChange)
     }
   }, [])
-
-  const enablePersistence = () => {
-    firebase.firestore().enablePersistence()
-      .catch(err => {
-        if (err.code == 'failed-precondition') {
-          // Multiple tabs open, persistence can only be enabled
-          // in one tab at a a time.
-          // ...
-          setMultiTab(true)
-        } else if (err.code == 'unimplemented') {
-          // The current browser does not support all of the
-          // features required to enable persistence
-          // ...
-          setUnsupported(true)
-        }
-      })
-
-  }
 
   const handleConnectionChange = async () => {
     const condition = navigator.onLine ? 'online' : 'offline';
@@ -58,10 +43,19 @@ const App = (props) => {
 
   return (
     <div>
-      {Disconnected && <div>You're disconnected</div>}
+      {props.connection.connectionStatus === 'disconnected' && <div>You're disconnected</div>}
       {MultiTab && <div>You opened a new tab. Please back at previous tab!</div>}
       {Unsupported && <div>Sorry, your browser is Unsupported.</div>}
-      <span>Main Page</span>
+      <BrowserRouter>
+        <Switch>
+          <Route exact path="/">
+            <Home />
+          </Route>
+          <Route exact path="/barang">
+            <Barang />
+          </Route>
+        </Switch>
+      </BrowserRouter>
     </div>
   )
 }
