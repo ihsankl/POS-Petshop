@@ -12,7 +12,7 @@ const Home = (props) => {
 
     return (
         <div>
-            <span>This is Home</span>
+            <span>this is home</span>
         </div>
     )
 }

@@ -10,7 +10,7 @@ const LoginForms = (props) => {
     const emailRef = useRef()
     const passwordRef = useRef()
     const [PassVisible, setPassVisible] = useState(false)
-    const [Loading, setLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
     const [Error, setError] = useState({
         state: false,
         msg: '',
@@ -122,8 +122,12 @@ const LoginForms = (props) => {
 
     return (
         <div className="flex-1 flex items-center justify-center">
-            <Alert error={Error.state} msg={Error.msg} />
-            <Loading loading={Loading} />
+            {Error.state &&
+                <Alert error={Error.state} msg={Error.msg} />
+            }
+            {isLoading &&
+                <Loading loading={isLoading} />
+            }
             <form className="flex flex-col items-center">
                 <svg className="mb-10" width="338" height="62" viewBox="0 0 338 62" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect width="338" height="62" rx="30" fill="#8CFFFA" fillOpacity="0.38" />
@@ -160,9 +164,9 @@ const LoginForms = (props) => {
 
 const mapStateToProps = state => {
     return {
-      connection: state.checkConnection,
+        connection: state.checkConnection,
     }
-  }
-  
-  
-  export default compose(connect(mapStateToProps))(LoginForms)
+}
+
+
+export default compose(connect(mapStateToProps))(LoginForms)

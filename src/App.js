@@ -8,14 +8,17 @@ import Home from './Pages/Home';
 import Barang from './Pages/Barang';
 import NotFound from './Pages/NotFound';
 import Login from './Pages/Login';
+import MultiTab from './Components/Utils/MultiTab';
+import Disconnected from './Components/Utils/Disconnected';
 
 
 const App = (props) => {
-  const [MultiTab, setMultiTab] = useState(false)
+  const [isMultiTab, setIsMultiTab] = useState(false)
   const [Unsupported, setUnsupported] = useState(false)
 
+
   useEffect(() => {
-    // enablePersistence()
+    enablePersistence()
     window.addEventListener('online', handleConnectionChange)
     window.addEventListener('offline', handleConnectionChange);
     handleConnectionChange()
@@ -24,6 +27,24 @@ const App = (props) => {
       window.removeEventListener('offline', handleConnectionChange)
     }
   }, [])
+
+  const enablePersistence = () => {
+    firebase.firestore().enablePersistence()
+      .catch(function (err) {
+        console.log(err)
+        if (err.code == 'failed-precondition') {
+          // Multiple tabs open, persistence can only be enabled
+          // in one tab at a a time.
+          // ...
+          setIsMultiTab(true)
+        } else if (err.code == 'unimplemented') {
+          // The current browser does not support all of the
+          // features required to enable persistence
+          // ...
+          setUnsupported(true)
+        }
+      });
+  }
 
   const handleConnectionChange = async () => {
     const condition = navigator.onLine ? 'online' : 'offline';
@@ -45,8 +66,12 @@ const App = (props) => {
 
   return (
     <div>
-      {props.connection.connectionStatus === 'disconnected' && <div>You're disconnected</div>}
-      {MultiTab && <div>You opened a new tab. Please back at previous tab!</div>}
+      {props.connection.connectionStatus === 'disconnected' &&
+        <Disconnected disconnected={props.connection.connectionStatus === 'disconnected'} />
+      }
+      {isMultiTab &&
+        <MultiTab isMultiTab={isMultiTab} />
+      }
       {Unsupported && <div>Sorry, your browser is Unsupported.</div>}
       <BrowserRouter>
         <Switch>
