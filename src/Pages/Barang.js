@@ -116,7 +116,7 @@ const Barang = (props) => {
                 <>
                     <button onClick={() => setIsAdd(true)}>Tambah</button>
                     <label>Cari: </label>
-                    <input name="search" value={Search} onChange={onSearch} />
+                    <input name="search" value={Search} onChange={null} />
                     <table>
                         <thead>
                             <tr>

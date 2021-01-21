@@ -6,11 +6,13 @@ import { checkConnection } from './Redux/action/checkConnection'
 import firebase from './Firebase'
 import Home from './Pages/Home';
 import Barang from './Pages/Barang';
+import NotFound from './Pages/NotFound';
+import Login from './Pages/Login';
 
 
 const App = (props) => {
-  // const [MultiTab, setMultiTab] = useState(false)
-  // const [Unsupported, setUnsupported] = useState(false)
+  const [MultiTab, setMultiTab] = useState(false)
+  const [Unsupported, setUnsupported] = useState(false)
 
   useEffect(() => {
     // enablePersistence()
@@ -51,8 +53,14 @@ const App = (props) => {
           <Route exact path="/">
             <Home />
           </Route>
+          <Route exact path="/login">
+            <Login />
+          </Route>
           <Route exact path="/barang">
             <Barang />
+          </Route>
+          <Route path="*">
+            <NotFound />
           </Route>
         </Switch>
       </BrowserRouter>
