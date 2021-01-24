@@ -1,10 +1,10 @@
 import { combineReducers } from 'redux'
-import login from './login'
 import checkConnection from './checkConnection'
+import notification from './notification'
 
 const appReducer = combineReducers({
-    login,
     checkConnection,
+    notification: notification
 })
 
 

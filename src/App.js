@@ -10,12 +10,14 @@ import NotFound from './Pages/NotFound';
 import Login from './Pages/Login';
 import MultiTab from './Components/Utils/MultiTab';
 import Disconnected from './Components/Utils/Disconnected';
-
+import MenuHeader from './Components/MenuHeader';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import Alert from './Components/Utils/Alert';
 
 const App = (props) => {
   const [isMultiTab, setIsMultiTab] = useState(false)
   const [Unsupported, setUnsupported] = useState(false)
-
+  const [user, loading, error] = useAuthState(firebase.auth());
 
   useEffect(() => {
     enablePersistence()
@@ -65,40 +67,51 @@ const App = (props) => {
   }
 
   return (
-    <div>
+    <>
       {props.connection.connectionStatus === 'disconnected' &&
         <Disconnected disconnected={props.connection.connectionStatus === 'disconnected'} />
       }
       {isMultiTab &&
         <MultiTab isMultiTab={isMultiTab} />
       }
+      {props.notification.isError &&
+        <Alert error={props.notification.isError} msg={props.notification.msg} />
+      }
+      {props.notification.isSuccess &&
+        <Alert msg={props.notification.msg} success={props.notification.isSuccess} />
+      }
       {Unsupported && <div>Sorry, your browser is Unsupported.</div>}
       <BrowserRouter>
+        {user &&
+          <MenuHeader />
+        }
         <Switch>
-          <Route exact path="/">
-            <Home />
-          </Route>
           <Route exact path="/login">
-            <Login />
+            {!user ? <Login /> : <Redirect to="/" />}
+          </Route>
+          <Route exact path="/">
+            {user ? <Home /> : <Redirect to="/login" />}
           </Route>
           <Route exact path="/barang">
-            <Barang />
+            {user ? <Barang /> : <Redirect to="/login" />}
           </Route>
           <Route path="*">
             <NotFound />
           </Route>
         </Switch>
       </BrowserRouter>
-    </div>
+    </>
   )
 }
 
 const mapStateToProps = state => {
   return {
-    login: state.login,
     connection: state.checkConnection,
+    notification: state.notification
   }
 }
 
 
-export default compose(connect(mapStateToProps))(App)
+export default compose(
+  connect(mapStateToProps),
+)(App)
