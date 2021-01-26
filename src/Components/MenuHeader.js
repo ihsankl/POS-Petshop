@@ -20,16 +20,16 @@ const MenuHeader = props => {
     }
     
     return (
-        <animated.div className={`z-50 absolute right-0 top-0 left-0 overflow-hidden justify-center flex`}>
-            <div className={`flex text-center w-3/4 py-4 text-blue-400 bg-gray-200 `}>
+        <animated.div className={`z-40 fixed right-0 top-0 left-0 overflow-hidden justify-center flex`}>
+            <div className={`flex text-center w-3/4 py-4 bg-gray-200 `}>
                 {/* ACTIVE = bg-blue-600 */}
                 <Link to="/" onClick={()=> handleMenu('Home')} className="focus:outline-none pl-12"><img className="w-32" src={logo} /></Link>
-                <Link to="/kasir" onClick={()=> handleMenu('kasir')} className={`font-bold focus:outline-none flex-1 ${Menu === 'kasir' ? 'text-blue-600' : 'text-blue-400'}`}>Kasir</Link>
-                <Link to="/distributor" onClick={()=> handleMenu('distributor')} className={`font-bold focus:outline-none flex-1 ${Menu === 'distributor' ? 'text-blue-600' : 'text-blue-400'}`}>Distributor</Link>
-                <Link to="/barang" onClick={()=> handleMenu('barang')} className={`font-bold focus:outline-none flex-1 ${Menu === 'barang' ? 'text-blue-600' : 'text-blue-400'}`}>Barang</Link>
-                <Link to="/stok_barang" onClick={()=> handleMenu('stok_barang')} className={`font-bold focus:outline-none flex-1 ${Menu === 'stok_barang' ? 'text-blue-600' : 'text-blue-400'}`}>Stok Barang</Link>
-                <Link to="/riwayat" onClick={()=> handleMenu('riwayat')} className={`font-bold focus:outline-none flex-1 ${Menu === 'riwayat' ? 'text-blue-600' : 'text-blue-400'}`}>Riwayat</Link>
-                <Link to="#" onClick={onLogout} className={`font-bold focus:outline-none flex-1 'text-blue-400`}>Logout</Link>
+                <Link to="/kasir" onClick={()=> handleMenu('kasir')} className={`font-bold focus:outline-none flex-1 ${Menu === 'kasir' ? 'text-purple-500' : 'text-purple-400'}`}>Kasir</Link>
+                <Link to="/distributor" onClick={()=> handleMenu('distributor')} className={`font-bold focus:outline-none flex-1 ${Menu === 'distributor' ? 'text-purple-500' : 'text-purple-400'}`}>Distributor</Link>
+                <Link to="/barang" onClick={()=> handleMenu('barang')} className={`font-bold focus:outline-none flex-1 ${Menu === 'barang' ? 'text-purple-500' : 'text-purple-400'}`}>Barang</Link>
+                <Link to="/stok_barang" onClick={()=> handleMenu('stok_barang')} className={`font-bold focus:outline-none flex-1 ${Menu === 'stok_barang' ? 'text-purple-500' : 'text-purple-400'}`}>Stok Barang</Link>
+                <Link to="/riwayat" onClick={()=> handleMenu('riwayat')} className={`font-bold focus:outline-none flex-1 ${Menu === 'riwayat' ? 'text-purple-500' : 'text-purple-400'}`}>Riwayat</Link>
+                <Link to="#" onClick={onLogout} className={`font-bold focus:outline-none flex-1 text-purple-400`}>Logout</Link>
             </div>
         </animated.div>
     )

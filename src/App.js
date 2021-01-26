@@ -3,16 +3,18 @@ import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 import { compose } from "redux";
 import { connect } from 'react-redux';
 import { checkConnection } from './Redux/action/checkConnection'
+import { useAuthState } from 'react-firebase-hooks/auth';
 import firebase from './Firebase'
 import Home from './Pages/Home';
-import Barang from './Pages/Barang';
+import Barang from './Pages/Barang/';
 import NotFound from './Pages/NotFound';
 import Login from './Pages/Login';
 import MultiTab from './Components/Utils/MultiTab';
 import Disconnected from './Components/Utils/Disconnected';
 import MenuHeader from './Components/MenuHeader';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import Alert from './Components/Utils/Alert';
+import AddBarang from './Pages/Barang/Add';
+import UpdateBarang from './Pages/Barang/Update';
 
 const App = (props) => {
   const [isMultiTab, setIsMultiTab] = useState(false)
@@ -94,6 +96,12 @@ const App = (props) => {
           </Route>
           <Route exact path="/barang">
             {user ? <Barang /> : <Redirect to="/login" />}
+          </Route>
+          <Route exact path="/barang/add">
+            {user ? <AddBarang /> : <Redirect to="/login" />}
+          </Route>
+          <Route exact path="/barang/update">
+            {user ? <UpdateBarang /> : <Redirect to="/login" />}
           </Route>
           <Route path="*">
             <NotFound />

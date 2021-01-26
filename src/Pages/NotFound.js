@@ -1,9 +1,12 @@
 import React from 'react'
 
-export default function NotFound() {
+const NotFound = () => {
     return (
         <div>
-            The Page You Are Looking Isn't Exist!
+            404
         </div>
     )
 }
+
+export default NotFound
+

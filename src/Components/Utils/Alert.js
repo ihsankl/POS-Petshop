@@ -11,8 +11,8 @@ const Alert = (props) => {
         opacity: success || error ? 1:0
     })
     return (
-        <animated.div style={fade} className={`z-50 absolute right-0 top-0 left-0 overflow-hidden justify-center flex`}>
-            <div className={`${error ? 'border-red-500 border-2' : success ? 'border-blue-500 border-2' : ''} w-1/2 py-4 text-red-500 flex justify-center items-center bg-white`}>{msg}</div>
+        <animated.div style={fade} className={`z-50 fixed right-0 top-20 left-0 overflow-hidden justify-center flex z-50`}>
+            <div className={`${error ? 'border-red-500 border-2 text-red-500' : success ? 'border-blue-500 border-2 text-blue-500' : ''} w-1/2 py-4 flex justify-center items-center bg-white`}>{msg}</div>
         </animated.div>
     )
 }

@@ -8,7 +8,7 @@ const Disconnected = props => {
         opacity: !disconnected ? 0 : 1
     })
     return (
-        <animated.div style={fade} className={`z-50 absolute right-0 top-0 left-0 overflow-hidden justify-center flex`}>
+        <animated.div style={fade} className={`z-50 fixed right-0 top-20 left-0 overflow-hidden justify-center flex`}>
             <div className={`border-red-500 border-2 bg-white w-1/2 py-4 text-red-500 flex justify-center items-center`}>Koneksi Terputus!!</div>
         </animated.div>
     )
