@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 import { compose } from "redux";
 import { connect } from 'react-redux';
 import { checkConnection } from './Redux/action/checkConnection'
+import { getBarang } from './Redux/action/barang'
 import { useAuthState } from 'react-firebase-hooks/auth';
 import firebase from './Firebase'
 import Home from './Pages/Home';
@@ -15,6 +16,9 @@ import MenuHeader from './Components/MenuHeader';
 import Alert from './Components/Utils/Alert';
 import AddBarang from './Pages/Barang/Add';
 import UpdateBarang from './Pages/Barang/Update';
+import Kasir from './Pages/Kasir/';
+
+const refBarang = firebase.firestore().collection("barang")
 
 const App = (props) => {
   const [isMultiTab, setIsMultiTab] = useState(false)
@@ -23,6 +27,7 @@ const App = (props) => {
 
   useEffect(() => {
     enablePersistence()
+    initializeBarang()
     window.addEventListener('online', handleConnectionChange)
     window.addEventListener('offline', handleConnectionChange);
     handleConnectionChange()
@@ -68,6 +73,18 @@ const App = (props) => {
     await props.dispatch(checkConnection('disconnected'))
   }
 
+  const initializeBarang = () => {
+    refBarang.orderBy('nama_barang').onSnapshot(async (snapShots) => {
+      const data = []
+      snapShots.forEach(docs => {
+        let currentID = docs.id
+        let appObj = { ...docs.data(), ['id']: currentID }
+        data.push(appObj)
+      })
+      await props.dispatch(getBarang(data))
+    })
+  }
+
   return (
     <>
       {props.connection.connectionStatus === 'disconnected' &&
@@ -82,7 +99,9 @@ const App = (props) => {
       {props.notification.isSuccess &&
         <Alert msg={props.notification.msg} success={props.notification.isSuccess} />
       }
-      {Unsupported && <div>Sorry, your browser is Unsupported.</div>}
+      {Unsupported &&
+        <Alert error={Unsupported} msg={'Maaf browser anda tidak mendukung aplikasi ini.'} />
+      }
       <BrowserRouter>
         {user &&
           <MenuHeader />
@@ -97,11 +116,15 @@ const App = (props) => {
           <Route exact path="/barang">
             {user ? <Barang /> : <Redirect to="/login" />}
           </Route>
+
           <Route exact path="/barang/add">
             {user ? <AddBarang /> : <Redirect to="/login" />}
           </Route>
           <Route exact path="/barang/update">
             {user ? <UpdateBarang /> : <Redirect to="/login" />}
+          </Route>
+          <Route exact path="/kasir">
+            {user ? <Kasir /> : <Redirect to="/login" />}
           </Route>
           <Route path="*">
             <NotFound />

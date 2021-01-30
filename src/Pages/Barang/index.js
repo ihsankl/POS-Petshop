@@ -77,7 +77,7 @@ const Barang = (props) => {
                 </div>
                 <div className="flex flex-col text-sm text-purple-500 justify-start">
                     <span className="py-1 font-bold">{data.nama_barang}</span>
-                    <span className="py-1">Rp. {data.harga_jual}</span>
+                    <span className="py-1">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(data.harga_jual)}</span>
                     <span className="py-1">Stok Tersisa {data.sisa_stok}</span>
                 </div>
             </div>
@@ -98,7 +98,7 @@ const Barang = (props) => {
         <div className="">
             <div style={{
                 backgroundImage: `url(${bg})`,
-                height: "100%",
+                height:Items.length > 10 ? "":"100vh",
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
             }} className="flex flex-col bg-fixed px-20 pt-32">
