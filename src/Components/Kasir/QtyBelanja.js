@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import plus from '../../Images/plus.png'
 import minus from '../../Images/minus.png'
+import close from '../../Images/close.png'
 import PropTypes from 'prop-types'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
@@ -30,8 +31,13 @@ const QtyBelanja = props => {
                     list[index].qty = max
                     await props.dispatch(editInvoice(list))
                 } else {
-                    list[index].qty = value
-                    await props.dispatch(editInvoice(list))
+                    if (value <= 0) {
+                        list.splice(index, 1)
+                        await props.dispatch(editInvoice(list))
+                    } else {
+                        list[index].qty = value
+                        await props.dispatch(editInvoice(list))
+                    }
                 }
             }
 
@@ -39,6 +45,13 @@ const QtyBelanja = props => {
 
     }
 
+    const deleteItemInvoice = async() => {
+        const list = [...props.invoice.data]
+
+        list.splice(index, 1)
+        await props.dispatch(editInvoice(list))
+    }
+    
     return (
         <>
             <div className="flex flex-1">
@@ -47,6 +60,7 @@ const QtyBelanja = props => {
                 <button onClick={() => handleChange(null, "-")} className="focus:outline-none"> <img src={minus} className="w-8" /> </button>
             </div>
             <span className="flex-1">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(props.harga * props.qty)}</span>
+            <button onClick={deleteItemInvoice} className="focus:outline-none"><img src={close} className="w-8" /></button>
         </>
     )
 }

@@ -8,7 +8,7 @@ const List = (props) => {
     const { items } = props
 
     const Detail = ({ data, index }) => (
-        <div className="flex text-purple-500 font-bold text-xl items-center">
+        <div className="flex text-purple-500 font-bold text-xl items-center pb-4">
             <span className="flex-1">{data.nama_barang}</span>
             <QtyBelanja
                 qty={parseInt(data.qty)}
