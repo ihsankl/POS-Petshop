@@ -6,16 +6,29 @@ import QtyBelanja from '../../Components/Kasir/QtyBelanja'
 
 const List = (props) => {
     const { items } = props
+
+    const Detail = ({ data, index }) => (
+        <div className="flex text-purple-500 font-bold text-xl items-center">
+            <span className="flex-1">{data.nama_barang}</span>
+            <QtyBelanja
+                qty={parseInt(data.qty)}
+                max={parseInt(data.sisa_stok)}
+                harga={parseInt(data.harga_jual)}
+                index={index}
+            />
+        </div>
+    )
+
     return (
         <>
             <div className=" mt-8">
                 {items.length > 0 &&
-                    items.map((v, i) => (
-                        <div className="flex text-purple-500 font-bold text-xl justify-between items-center">
-                            <span>Saos ABC Maknyus</span>
-                            <QtyBelanja max={10} />
-                            <span>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(30000)}</span>
-                        </div>
+                    items.map((data, index) => (
+                        <Detail
+                            key={index}
+                            data={data}
+                            index={index}
+                        />
                     ))
                 }
             </div>
@@ -24,7 +37,7 @@ const List = (props) => {
 }
 
 List.propTypes = {
-    items: PropTypes.number.isRequired,
+    items: PropTypes.array.isRequired,
 }
 
 
