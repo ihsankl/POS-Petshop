@@ -17,6 +17,8 @@ import Alert from './Components/Utils/Alert';
 import AddBarang from './Pages/Barang/Add';
 import UpdateBarang from './Pages/Barang/Update';
 import Kasir from './Pages/Kasir/';
+import ConfirmDialog from './Components/ConfirmDialog/ConfirmDialog';
+import { confirm } from './Redux/action/confirm';
 
 const refBarang = firebase.firestore().collection("barang")
 
@@ -85,6 +87,14 @@ const App = (props) => {
     })
   }
 
+  const closeDialog = async () => {
+    console.log(props.confirm)
+    await props.dispatch(confirm({
+      ...props.confirm,
+      visible: false
+    }))
+  }
+
   return (
     <>
       {props.connection.connectionStatus === 'disconnected' &&
@@ -102,6 +112,14 @@ const App = (props) => {
       {Unsupported &&
         <Alert error={Unsupported} msg={'Maaf browser anda tidak mendukung aplikasi ini.'} />
       }
+      <ConfirmDialog
+        title={props.confirm.title}
+        open={props.confirm.visible}
+        onClose={closeDialog}
+        onConfirm={props.confirm.onConfirm}
+      >
+        {props.confirm.msg}
+      </ConfirmDialog>
       <BrowserRouter>
         {user &&
           <MenuHeader />
@@ -111,7 +129,7 @@ const App = (props) => {
             {!user ? <Login /> : <Redirect to="/" />}
           </Route>
           <Route exact path="/">
-            {user ? <Home /> : <Redirect to="/login" />}
+            {user ? <Kasir /> : <Redirect to="/login" />}
           </Route>
           <Route exact path="/barang">
             {user ? <Barang /> : <Redirect to="/login" />}
@@ -138,7 +156,8 @@ const App = (props) => {
 const mapStateToProps = state => {
   return {
     connection: state.checkConnection,
-    notification: state.notification
+    notification: state.notification,
+    confirm: state.confirm,
   }
 }
 

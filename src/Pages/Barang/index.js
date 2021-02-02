@@ -5,6 +5,7 @@ import firebase from '../../Firebase'
 import bg from '../../Assets/bg1.png'
 import plus from '../../Assets/plus.png'
 import { Link, useHistory } from 'react-router-dom';
+import { confirm } from '../../Redux/action/confirm';
 const refBarang = firebase.firestore().collection("barang")
 
 const Barang = (props) => {
@@ -33,6 +34,14 @@ const Barang = (props) => {
         })
     }
 
+    const openDialog = async (id) => {
+        await props.dispatch(confirm({
+            visible: true,
+            title: "Hapus Barang",
+            msg: "Apakah anda yakin akan menghapus barang?",
+            onConfirm:()=> onDelete(id)
+        }))
+    }
 
     const onDelete = (id) => {
         refBarang.doc(id).delete()
@@ -69,7 +78,8 @@ const Barang = (props) => {
                     </button>
                     <div ref={itemRef} hidden className="absolute rounded-lg text-white mt-4">
                         <button onClick={() => history.push('/barang/update', detail)} className="p-1 rounded-l-lg font-bold bg-green-500 focus:outline-none">Edit</button>
-                        <button onClick={() => onDelete(data.id)} className="p-1 rounded-r-lg font-bold bg-red-500 focus:outline-none">Delete</button>
+                        {/* onDelete(data.id) */}
+                        <button onClick={()=> openDialog(data.id)} className="p-1 rounded-r-lg font-bold bg-red-500 focus:outline-none">Delete</button>
                     </div>
                 </div>
                 <div className="w-full h-24 flex justify-center items-center">
@@ -92,14 +102,14 @@ const Barang = (props) => {
             return data
         }
     }).map(data => {
-        return <ItemsComponent key={data.id} data={data} /> 
+        return <ItemsComponent key={data.id} data={data} />
     })
 
     return (
         <div className="">
             <div style={{
                 backgroundImage: `url(${bg})`,
-                height:Items.length > 10 ? "":"100vh",
+                height: Items.length > 10 ? "" : "100vh",
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
             }} className="flex flex-col bg-fixed px-20 pt-32">
@@ -136,6 +146,7 @@ const Barang = (props) => {
 const mapStateToProps = state => {
     return {
         connection: state.checkConnection,
+        confirm: state.confirm
     }
 }
 

@@ -62,33 +62,47 @@ const Update = (props) => {
                 await props.dispatch(notification({ isError: false, msg: '' }))
             }, 3000);
         } else {
-            if (props.connection.connectionStatus === 'disconnected') {
-                refBarang.doc(Values.id).set(Values)
-                setValues({
-                    nama_barang: '',
-                    kode_barang: '',
-                    sisa_stok: '',
-                    harga_jual: '',
-                    harga_pokok: '',
-                    harga_distributor: '',
-                    ppn: '',
-                    diskon: '',
-                })
-                history.push('/barang')
-            } else {
-                await refBarang.doc(Values.id).set(Values)
-                setValues({
-                    nama_barang: '',
-                    kode_barang: '',
-                    sisa_stok: '',
-                    harga_jual: '',
-                    harga_pokok: '',
-                    harga_distributor: '',
-                    ppn: '',
-                    diskon: '',
-                })
-                history.push('/barang')
+            try {
+                if (props.connection.connectionStatus === 'disconnected') {
+                    refBarang.doc(Values.id).set(Values)
+                    setValues({
+                        nama_barang: '',
+                        kode_barang: '',
+                        sisa_stok: '',
+                        harga_jual: '',
+                        harga_pokok: '',
+                        harga_distributor: '',
+                        ppn: '',
+                        diskon: '',
+                    })
+                    history.push('/barang')
+                } else {
+
+                    await refBarang.doc(Values.id).set(Values)
+                    setValues({
+                        nama_barang: '',
+                        kode_barang: '',
+                        sisa_stok: '',
+                        harga_jual: '',
+                        harga_pokok: '',
+                        harga_distributor: '',
+                        ppn: '',
+                        diskon: '',
+                    })
+                    history.push('/barang')
+                }
+
+                await props.dispatch(notification({ isSuccess: true, msg: 'Data berhasil di Update!' }))
+                setTimeout(async () => {
+                    await props.dispatch(notification({ isSuccess: false, msg: '' }))
+                }, 3000);
+            } catch (error) {
+                await props.dispatch(notification({ isError: true, msg: 'Terjadi Kesalahan!' }))
+                setTimeout(async () => {
+                    await props.dispatch(notification({ isError: false, msg: '' }))
+                }, 3000);
             }
+
         }
     }
 
@@ -144,8 +158,6 @@ const Update = (props) => {
                             <input type="number" name="sisa_stok" value={Values.sisa_stok} onChange={onChangeValue} className="w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="Sisa Stok . . ." />
                         </div>
                     </div>
-                    {/* <span className="text-2xl pt-8">Sisa Stok</span>
-                    <input type="number" name="sisa_stok" value={Values.sisa_stok} onChange={onChangeValue} className="w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="Sisa Stok . . ." /> */}
                     <div className="flex text-white mt-8">
                         <button onClick={onSubmit} className="p-2 rounded-l-lg font-bold bg-green-500 focus:outline-none">Simpan</button>
                         <button onClick={() => history.push('/barang')} className="p-2 rounded-r-lg font-bold bg-red-500 focus:outline-none">Batal</button>

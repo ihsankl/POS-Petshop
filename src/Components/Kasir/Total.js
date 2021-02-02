@@ -13,43 +13,51 @@ const Total = (props) => {
     const [user, loading, error] = useAuthState(firebase.auth());
 
 
-    const queryToDb = async() => {
+    const queryToDb = async () => {
         const list = [...props.invoice.data]
         const data1 = []
         let data2 = {}
-        list.map((v, i) => {
-            const stok = parseInt(v.sisa_stok) - parseInt(v.qty)
-            const dataToBarang = {
-                diskon: list[i].diskon,
-                harga_jual: list[i].harga_jual,
-                harga_distributor: list[i].harga_distributor,
-                harga_pokok: list[i].harga_pokok,
-                // kategori: list[i].kategori,
-                kode_barang: list[i].kode_barang,
-                nama_barang: list[i].nama_barang,
-                ppn: list[i].ppn,
-                sisa_stok: stok
-            }
+        try {
+            list.map((v, i) => {
+                const stok = parseInt(v.sisa_stok) - parseInt(v.qty)
+                const dataToBarang = {
+                    diskon: list[i].diskon,
+                    harga_jual: list[i].harga_jual,
+                    harga_distributor: list[i].harga_distributor,
+                    harga_pokok: list[i].harga_pokok,
+                    // kategori: list[i].kategori,
+                    kode_barang: list[i].kode_barang,
+                    nama_barang: list[i].nama_barang,
+                    ppn: list[i].ppn,
+                    sisa_stok: stok
+                }
 
-            const dataToPenjualan = {
-                barang: v.id,
-                qty:v.qty
-            }
-            data1.push(dataToPenjualan)
+                const dataToPenjualan = {
+                    barang: v.id,
+                    qty: v.qty
+                }
+                data1.push(dataToPenjualan)
 
-            refBarang.doc(v.id).set(dataToBarang)
-        })
-        data2 = {
-            id:uuidv4(),
-            data: data1,
-            tanggal: new Date(),
-            total_pembelian: props.invoice.sum,
-            kasir: user.email
+                refBarang.doc(v.id).set(dataToBarang)
+            })
+            data2 = {
+                id: uuidv4(),
+                data: data1,
+                tanggal: new Date(),
+                total_pembelian: props.invoice.sum,
+                kasir: user.email,
+                total_bayar: parseInt(Bayar),
+                kembalian: (parseInt(Bayar) - parseInt(props.invoice.sum))
+            }
+            refPenjualan.doc(data2.id).set(data2)
+            await props.dispatch(editInvoice([]))
+            await props.dispatch(sumInvoice(0))
+            console.log(data2)
+        } catch (error) {
+            alert("Terjadi kesalahan!")
+            console.log(error)
         }
-        refPenjualan.doc(data2.id).set(data2)
-        await props.dispatch(editInvoice([]))
-        await props.dispatch(sumInvoice(0))
-        console.log(data2)
+
     }
 
     return (

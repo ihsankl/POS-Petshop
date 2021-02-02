@@ -78,7 +78,7 @@ const QtyBelanja = props => {
                 <input onChange={(e) => handleChange(e, null)} name="qty" value={data.qty} max={data.sisa_stok} min={0} type="number" className="w-12 focus:outline-none border-2 border-purple-500 rounded-md px-1 mx-4" />
                 <button onClick={() => handleChange(null, "-")} className="focus:outline-none"> <img src={minus} className="w-8" /> </button>
             </div>
-            <span className="flex-1">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(finalCost)}</span>
+            <span className="flex-1">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(parseInt(finalCost) * parseInt(data.qty))}</span>
             <button onClick={deleteItemInvoice} className="focus:outline-none"><img src={trash2} className="w-6 " /></button>
         </>
     )

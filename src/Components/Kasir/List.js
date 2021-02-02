@@ -15,16 +15,12 @@ const List = (props) => {
         }
     }, [items])
 
-    const count = async (index) => {
+    const count = async () => {
         const total = props.invoice.data.reduce((acc, el) => acc + (parseInt(el.isDistributor ? el.harga_distributor : el.harga_jual) * parseInt(el.qty)), 0)
         await props.dispatch(sumInvoice(total))
     }
 
     const Detail = ({ data, index }) => {
-        // TODO: choose between harga_jual, harga_pokok, harga_distributor
-        const harga = data.harga_jual
-
-        const finalCost = parseInt(harga) - (parseInt(harga) * ((parseInt(data.diskon) / 100)))
         return (
             <div className="flex text-purple-500 font-bold text-xl items-center pb-4">
 
