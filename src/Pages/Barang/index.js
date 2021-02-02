@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import { compose } from "redux";
 import { connect } from 'react-redux';
 import firebase from '../../Firebase'
-import bg from '../../Images/bg1.png'
-import plus from '../../Images/plus.png'
+import bg from '../../Assets/bg1.png'
+import plus from '../../Assets/plus.png'
 import { Link, useHistory } from 'react-router-dom';
 const refBarang = firebase.firestore().collection("barang")
 
@@ -55,6 +55,7 @@ const Barang = (props) => {
             sisa_stok: data.sisa_stok,
             harga_jual: data.harga_jual,
             harga_pokok: data.harga_pokok,
+            harga_distributor: data.harga_distributor,
             ppn: data.ppn,
             diskon: data.diskon
         }

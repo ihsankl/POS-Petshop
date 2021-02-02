@@ -24,6 +24,7 @@
     "redux-promise-middleware": "^6.1.2",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat",
     "underscore": "^1.12.0",
+    "uuid": "^8.3.2",
     "web-vitals": "^0.2.4"
   },
   "scripts": {

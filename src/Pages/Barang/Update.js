@@ -4,7 +4,7 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { compose } from 'redux'
 import { notification } from '../../Redux/action/notification'
 import firebase from '../../Firebase'
-import bg from '../../Images/bg1.png'
+import bg from '../../Assets/bg1.png'
 const refBarang = firebase.firestore().collection("barang")
 
 const Update = (props) => {
@@ -17,6 +17,7 @@ const Update = (props) => {
         sisa_stok: '',
         harga_jual: '',
         harga_pokok: '',
+        harga_distributor: '',
         ppn: '',
         diskon: '',
     })
@@ -39,6 +40,7 @@ const Update = (props) => {
                 sisa_stok: location.state.sisa_stok,
                 harga_jual: location.state.harga_jual,
                 harga_pokok: location.state.harga_pokok,
+                harga_distributor: location.state.harga_distributor,
                 ppn: location.state.ppn,
                 diskon: location.state.diskon
             })
@@ -68,6 +70,7 @@ const Update = (props) => {
                     sisa_stok: '',
                     harga_jual: '',
                     harga_pokok: '',
+                    harga_distributor: '',
                     ppn: '',
                     diskon: '',
                 })
@@ -80,6 +83,7 @@ const Update = (props) => {
                     sisa_stok: '',
                     harga_jual: '',
                     harga_pokok: '',
+                    harga_distributor: '',
                     ppn: '',
                     diskon: '',
                 })
@@ -122,16 +126,26 @@ const Update = (props) => {
                     </div>
                     <div className="flex">
                         <div className="flex flex-col">
-                            <span className="text-2xl pt-8">PPN</span>
-                            <input type="number" name="ppn" value={Values.ppn} onChange={onChangeValue} className="w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="PPN . . ." />
+                            <span className="text-2xl pt-8">Harga Distributor</span>
+                            <input type="number" name="harga_pokok" value={Values.harga_distributor} onChange={onChangeValue} className="w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="Harga Pokok . . ." />
                         </div>
                         <div className="flex flex-col ml-4">
                             <span className="text-2xl pt-8">Diskon</span>
                             <input type="number" name="diskon" value={Values.diskon} onChange={onChangeValue} className="w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="Diskon . . ." />
                         </div>
                     </div>
-                    <span className="text-2xl pt-8">Sisa Stok</span>
-                    <input type="number" name="sisa_stok" value={Values.sisa_stok} onChange={onChangeValue} className="w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="Sisa Stok . . ." />
+                    <div className="flex">
+                        <div className="flex flex-col">
+                            <span className="text-2xl pt-8">PPN</span>
+                            <input type="number" name="ppn" value={Values.ppn} onChange={onChangeValue} className="w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="PPN . . ." />
+                        </div>
+                        <div className="flex flex-col ml-4">
+                            <span className="text-2xl pt-8">Sisa Stok</span>
+                            <input type="number" name="sisa_stok" value={Values.sisa_stok} onChange={onChangeValue} className="w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="Sisa Stok . . ." />
+                        </div>
+                    </div>
+                    {/* <span className="text-2xl pt-8">Sisa Stok</span>
+                    <input type="number" name="sisa_stok" value={Values.sisa_stok} onChange={onChangeValue} className="w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="Sisa Stok . . ." /> */}
                     <div className="flex text-white mt-8">
                         <button onClick={onSubmit} className="p-2 rounded-l-lg font-bold bg-green-500 focus:outline-none">Simpan</button>
                         <button onClick={() => history.push('/barang')} className="p-2 rounded-r-lg font-bold bg-red-500 focus:outline-none">Batal</button>

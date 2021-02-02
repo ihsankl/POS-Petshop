@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import firebase from "../Firebase";
 import { Link, useHistory } from 'react-router-dom';
 import { useSpring, animated } from 'react-spring'
-import logo from "../Images/Logo.png";
+import logo from "../Assets/Logo.png";
 
 const MenuHeader = props => {
     const [Menu, setMenu] = useState('')
