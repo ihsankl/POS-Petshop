@@ -1,11 +1,20 @@
+// CORE
 import React, { useEffect, useState } from 'react'
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 import { compose } from "redux";
 import { connect } from 'react-redux';
+
+// REDUX ACTIONS
 import { checkConnection } from './Redux/action/checkConnection'
 import { getBarang } from './Redux/action/barang'
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { confirm } from './Redux/action/confirm';
+import { getPenjualan } from './Redux/action/penjualan';
+
+// FIREBASE
 import firebase from './Firebase'
+
+// COMPONENTS
 import Home from './Pages/Home';
 import Barang from './Pages/Barang/';
 import NotFound from './Pages/NotFound';
@@ -18,9 +27,10 @@ import AddBarang from './Pages/Barang/Add';
 import UpdateBarang from './Pages/Barang/Update';
 import Kasir from './Pages/Kasir/';
 import ConfirmDialog from './Components/ConfirmDialog/ConfirmDialog';
-import { confirm } from './Redux/action/confirm';
+import Riwayat from './Pages/Riwayat/';
 
 const refBarang = firebase.firestore().collection("barang")
+const refPenjualan = firebase.firestore().collection("penjualan")
 
 const App = (props) => {
   const [isMultiTab, setIsMultiTab] = useState(false)
@@ -30,6 +40,7 @@ const App = (props) => {
   useEffect(() => {
     enablePersistence()
     initializeBarang()
+    initializePenjualan()
     window.addEventListener('online', handleConnectionChange)
     window.addEventListener('offline', handleConnectionChange);
     handleConnectionChange()
@@ -73,6 +84,19 @@ const App = (props) => {
       return;
     }
     await props.dispatch(checkConnection('disconnected'))
+  }
+
+  const initializePenjualan = () => {
+    refPenjualan.onSnapshot(async (snapShots) => {
+      const data = []
+      snapShots.forEach(docs => {
+        let currentID = docs.id
+        let appObj = { ...docs.data(), ['id']: currentID }
+        data.push(appObj)
+      })
+      await props.dispatch(getPenjualan(data))
+    })
+
   }
 
   const initializeBarang = () => {
@@ -134,12 +158,14 @@ const App = (props) => {
           <Route exact path="/barang">
             {user ? <Barang /> : <Redirect to="/login" />}
           </Route>
-
           <Route exact path="/barang/add">
             {user ? <AddBarang /> : <Redirect to="/login" />}
           </Route>
           <Route exact path="/barang/update">
             {user ? <UpdateBarang /> : <Redirect to="/login" />}
+          </Route>
+          <Route exact path="/riwayat">
+            {user ? <Riwayat /> : <Redirect to="/login" />}
           </Route>
           <Route exact path="/kasir">
             {user ? <Kasir /> : <Redirect to="/login" />}

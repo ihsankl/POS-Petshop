@@ -16,23 +16,14 @@ const Barang = (props) => {
     const [Search, setSearch] = useState('')
 
     useEffect(() => {
-        unsubscribe()
+        getBarang()
         return () => {
-            unsubscribe()
+            
         }
     }, [])
 
-    const unsubscribe = () => {
-        refBarang.orderBy('nama_barang').onSnapshot(snapShots => {
-            const data = []
-            snapShots.forEach(docs => {
-                let currentID = docs.id
-                let appObj = { ...docs.data(), ['id']: currentID }
-                data.push(appObj)
-
-            })
-            setBarang(data)
-        })
+    const getBarang = () => {
+        setBarang(props.dataBarang.barang)
     }
 
     const openDialog = async (id) => {
@@ -116,7 +107,6 @@ const Barang = (props) => {
                 backgroundImage: `url(${bg})`,
                 height: Items.length > 10 ? "" : "100vh",
                 backgroundSize: 'cover',
-                backgroundPosition: 'center',
             }} className="flex flex-col bg-fixed px-20 pt-32">
                 <div className="flex justify-end">
 
@@ -151,7 +141,8 @@ const Barang = (props) => {
 const mapStateToProps = state => {
     return {
         connection: state.checkConnection,
-        confirm: state.confirm
+        confirm: state.confirm,
+        dataBarang: state.dataBarang,
     }
 }
 

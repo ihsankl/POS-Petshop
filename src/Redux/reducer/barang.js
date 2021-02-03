@@ -1,5 +1,5 @@
 const initialState = {
-    barang: {},
+    barang: [],
 }
 
 const dataBarang = (state = initialState, action) => {

@@ -70,7 +70,6 @@ const Kasir = (props) => {
         <div style={{
             backgroundImage: `url(${bg})`,
             backgroundSize: 'cover',
-            backgroundPosition: 'center',
         }} className="bg-fixed px-20 pt-32 flex">
 
             {/* BAGIAN BARANG */}

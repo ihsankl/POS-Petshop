@@ -4,6 +4,7 @@ import notification from './notification'
 import dataBarang from './barang'
 import invoice from './invoice'
 import confirm from './confirm'
+import penjualan from './penjualan'
 
 const appReducer = combineReducers({
     checkConnection,
@@ -11,6 +12,7 @@ const appReducer = combineReducers({
     dataBarang,
     invoice,
     confirm,
+    penjualan,
 })
 
 

@@ -45,7 +45,7 @@ const Total = (props) => {
             data2 = {
                 id: uuidv4(),
                 data: data1,
-                tanggal: new Date(),
+                tanggal_penjualan: new Date(),
                 total_pembelian: props.invoice.sum,
                 kasir: user.email,
                 total_bayar: parseInt(Bayar),
