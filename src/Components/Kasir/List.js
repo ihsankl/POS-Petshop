@@ -16,7 +16,12 @@ const List = (props) => {
     }, [items])
 
     const count = async () => {
-        const total = props.invoice.data.reduce((acc, el) => acc + (parseInt(el.isDistributor ? el.harga_distributor : el.harga_jual) * parseInt(el.qty)), 0)
+
+        const total = props.invoice.data.reduce((acc, el) => {
+            const harga = el.isDistributor ? el.harga_distributor : el.harga_jual
+            const final = parseInt(harga) - (parseInt(harga) * parseInt(el.diskon) / 100)
+            return acc + (parseInt(final) * parseInt(el.qty))
+        }, 0)
         await props.dispatch(sumInvoice(total))
     }
 

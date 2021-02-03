@@ -141,7 +141,7 @@ const Update = (props) => {
                     <div className="flex">
                         <div className="flex flex-col">
                             <span className="text-2xl pt-8">Harga Distributor</span>
-                            <input type="number" name="harga_pokok" value={Values.harga_distributor} onChange={onChangeValue} className="w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="Harga Pokok . . ." />
+                            <input type="number" name="harga_distributor" value={Values.harga_distributor} onChange={onChangeValue} className="w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="Harga Distributor . . ." />
                         </div>
                         <div className="flex flex-col ml-4">
                             <span className="text-2xl pt-8">Diskon</span>

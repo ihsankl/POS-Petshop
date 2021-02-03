@@ -6,6 +6,7 @@ import bg from '../../Assets/bg1.png'
 import plus from '../../Assets/plus.png'
 import { Link, useHistory } from 'react-router-dom';
 import { confirm } from '../../Redux/action/confirm';
+import { notification } from '../../Redux/action/notification';
 const refBarang = firebase.firestore().collection("barang")
 
 const Barang = (props) => {
@@ -39,12 +40,16 @@ const Barang = (props) => {
             visible: true,
             title: "Hapus Barang",
             msg: "Apakah anda yakin akan menghapus barang?",
-            onConfirm:()=> onDelete(id)
+            onConfirm: () => onDelete(id)
         }))
     }
 
-    const onDelete = (id) => {
+    const onDelete = async(id) => {
         refBarang.doc(id).delete()
+        await props.dispatch(notification({ isSuccess: true, msg: 'Data berhasil di hapus!' }))
+        setTimeout(async () => {
+            await props.dispatch(notification({ isSuccess: false, msg: '' }))
+        }, 3000);
     }
 
     const focus = (ref) => {
@@ -79,7 +84,7 @@ const Barang = (props) => {
                     <div ref={itemRef} hidden className="absolute rounded-lg text-white mt-4">
                         <button onClick={() => history.push('/barang/update', detail)} className="p-1 rounded-l-lg font-bold bg-green-500 focus:outline-none">Edit</button>
                         {/* onDelete(data.id) */}
-                        <button onClick={()=> openDialog(data.id)} className="p-1 rounded-r-lg font-bold bg-red-500 focus:outline-none">Delete</button>
+                        <button onClick={() => openDialog(data.id)} className="p-1 rounded-r-lg font-bold bg-red-500 focus:outline-none">Delete</button>
                     </div>
                 </div>
                 <div className="w-full h-24 flex justify-center items-center">

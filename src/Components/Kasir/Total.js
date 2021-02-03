@@ -4,7 +4,9 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { editInvoice, sumInvoice } from '../../Redux/action/invoice'
+import { notification } from '../../Redux/action/notification'
 import firebase from '../../Firebase'
+
 const refPenjualan = firebase.firestore().collection("penjualan")
 const refBarang = firebase.firestore().collection("barang")
 
@@ -52,9 +54,16 @@ const Total = (props) => {
             refPenjualan.doc(data2.id).set(data2)
             await props.dispatch(editInvoice([]))
             await props.dispatch(sumInvoice(0))
+            await props.dispatch(notification({ isSuccess: true, msg: 'Data berhasil di Submit!' }))
+            setTimeout(async () => {
+                await props.dispatch(notification({ isSuccess: false, msg: '' }))
+            }, 3000);
             console.log(data2)
         } catch (error) {
-            alert("Terjadi kesalahan!")
+            await props.dispatch(notification({ isError: true, msg: 'Terjadi Kesalahan!' }))
+            setTimeout(async () => {
+                await props.dispatch(notification({ isError: false, msg: '' }))
+            }, 3000);
             console.log(error)
         }
 
