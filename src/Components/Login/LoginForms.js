@@ -4,6 +4,7 @@ import { compose } from "redux";
 import { connect } from 'react-redux';
 import firebase from '../../Firebase'
 import { notification } from '../../Redux/action/notification'
+import { getUser } from '../../Redux/action/user';
 
 const LoginForms = (props) => {
     const emailRef = useRef()
@@ -44,11 +45,13 @@ const LoginForms = (props) => {
         console.log('Login Started')
         try {
             const res = await firebase.auth().signInWithEmailAndPassword(Values.email, Values.password);
-            console.log(res)
-            await props.dispatch(notification({ isSuccess: true, msg: 'Login berhasil!' }))
-            setTimeout(async () => {
-                await props.dispatch(notification({ isSuccess: false, msg: '' }))
-            }, 3000);
+            if (res) {
+                await props.dispatch(getUser({ data: res, isSigned: true }))
+                await props.dispatch(notification({ isSuccess: true, msg: 'Login berhasil!' }))
+                setTimeout(async () => {
+                    await props.dispatch(notification({ isSuccess: false, msg: '' }))
+                }, 3000);
+            }
         } catch (err) {
             console.log(err.code)
             switch (err.code) {
@@ -98,7 +101,7 @@ const LoginForms = (props) => {
                 await props.dispatch(notification({ isError: false, msg: '' }))
             }, 3000);
         } else {
-            if (!Values.password !== !Values.rePassword) {
+            if (Values.password !== Values.rePassword) {
                 await props.dispatch(notification({ isError: true, msg: 'Password tidak sama!' }))
                 setTimeout(async () => {
                     await props.dispatch(notification({ isError: false, msg: '' }))
@@ -106,6 +109,13 @@ const LoginForms = (props) => {
             } else {
                 try {
                     const res = await firebase.auth().createUserWithEmailAndPassword(Values.email, Values.password)
+                    if (res) {
+                        await props.dispatch(getUser({ data: res, isSigned: true }))
+                        await props.dispatch(notification({ isSuccess: true, msg: 'Registrasi berhasil!' }))
+                        setTimeout(async () => {
+                            await props.dispatch(notification({ isSuccess: false, msg: '' }))
+                        }, 3000);
+                    }
                     console.log(res)
                 } catch (error) {
                     console.log(error)
@@ -177,6 +187,7 @@ const mapStateToProps = state => {
     return {
         notification: state.notification,
         connection: state.checkConnection,
+        user: state.user
     }
 }
 

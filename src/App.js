@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 import { compose } from "redux";
 import { connect } from 'react-redux';
+import dayjs from 'dayjs'
 
 // REDUX ACTIONS
 import { checkConnection } from './Redux/action/checkConnection'
@@ -28,6 +29,7 @@ import UpdateBarang from './Pages/Barang/Update';
 import Kasir from './Pages/Kasir/';
 import ConfirmDialog from './Components/ConfirmDialog/ConfirmDialog';
 import Riwayat from './Pages/Riwayat/';
+import DetailPenjualan from './Pages/Riwayat/Detail';
 
 const refBarang = firebase.firestore().collection("barang")
 const refPenjualan = firebase.firestore().collection("penjualan")
@@ -35,12 +37,11 @@ const refPenjualan = firebase.firestore().collection("penjualan")
 const App = (props) => {
   const [isMultiTab, setIsMultiTab] = useState(false)
   const [Unsupported, setUnsupported] = useState(false)
-  const [user, loading, error] = useAuthState(firebase.auth());
 
   useEffect(() => {
     enablePersistence()
     initializeBarang()
-    initializePenjualan()
+    // initializePenjualan()
     window.addEventListener('online', handleConnectionChange)
     window.addEventListener('offline', handleConnectionChange);
     handleConnectionChange()
@@ -51,6 +52,13 @@ const App = (props) => {
   }, [])
 
   const enablePersistence = () => {
+    // COMMENT INI
+    const db = firebase.firestore();
+    if (window.location.hostname === "localhost") {
+      db.useEmulator("localhost", 8080);
+      firebase.auth().useEmulator('http://localhost:9099/');
+    }
+
     firebase.firestore().enablePersistence()
       .catch(function (err) {
         console.log(err)
@@ -87,15 +95,19 @@ const App = (props) => {
   }
 
   const initializePenjualan = () => {
-    refPenjualan.onSnapshot(async (snapShots) => {
-      const data = []
-      snapShots.forEach(docs => {
-        let currentID = docs.id
-        let appObj = { ...docs.data(), ['id']: currentID }
-        data.push(appObj)
+    const today = dayjs(new Date()).format('YYYY-MM-DD')
+
+    refPenjualan
+      .where('tanggal_penjualan', '==', today)
+      .onSnapshot(async (snapShots) => {
+        const data = []
+        snapShots.forEach(docs => {
+          let currentID = docs.id
+          let appObj = { ...docs.data(), ['id']: currentID }
+          data.push(appObj)
+        })
+        await props.dispatch(getPenjualan(data))
       })
-      await props.dispatch(getPenjualan(data))
-    })
 
   }
 
@@ -112,7 +124,6 @@ const App = (props) => {
   }
 
   const closeDialog = async () => {
-    console.log(props.confirm)
     await props.dispatch(confirm({
       ...props.confirm,
       visible: false
@@ -145,30 +156,33 @@ const App = (props) => {
         {props.confirm.msg}
       </ConfirmDialog>
       <BrowserRouter>
-        {user &&
+        {props.user.isSigned &&
           <MenuHeader />
         }
         <Switch>
           <Route exact path="/login">
-            {!user ? <Login /> : <Redirect to="/" />}
+            {!props.user.isSigned ? <Login /> : <Redirect to="/" />}
           </Route>
           <Route exact path="/">
-            {user ? <Kasir /> : <Redirect to="/login" />}
+            {props.user.isSigned ? <Kasir /> : <Redirect to="/login" />}
           </Route>
           <Route exact path="/barang">
-            {user ? <Barang /> : <Redirect to="/login" />}
+            {props.user.isSigned ? <Barang /> : <Redirect to="/login" />}
           </Route>
           <Route exact path="/barang/add">
-            {user ? <AddBarang /> : <Redirect to="/login" />}
+            {props.user.isSigned ? <AddBarang /> : <Redirect to="/login" />}
           </Route>
           <Route exact path="/barang/update">
-            {user ? <UpdateBarang /> : <Redirect to="/login" />}
+            {props.user.isSigned ? <UpdateBarang /> : <Redirect to="/login" />}
           </Route>
           <Route exact path="/riwayat">
-            {user ? <Riwayat /> : <Redirect to="/login" />}
+            {props.user.isSigned ? <Riwayat /> : <Redirect to="/login" />}
+          </Route>
+          <Route exact path="/riwayat/detail">
+            {props.user.isSigned ? <DetailPenjualan /> : <Redirect to="/login" />}
           </Route>
           <Route exact path="/kasir">
-            {user ? <Kasir /> : <Redirect to="/login" />}
+            {props.user.isSigned ? <Kasir /> : <Redirect to="/login" />}
           </Route>
           <Route path="*">
             <NotFound />
@@ -184,6 +198,7 @@ const mapStateToProps = state => {
     connection: state.checkConnection,
     notification: state.notification,
     confirm: state.confirm,
+    user: state.user
   }
 }
 

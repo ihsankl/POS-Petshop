@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
-import { v4 as uuidv4 } from 'uuid'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { editInvoice, sumInvoice } from '../../Redux/action/invoice'
 import { notification } from '../../Redux/action/notification'
 import firebase from '../../Firebase'
+import dayjs from 'dayjs'
 
 const refPenjualan = firebase.firestore().collection("penjualan")
 const refBarang = firebase.firestore().collection("barang")
@@ -36,22 +36,23 @@ const Total = (props) => {
 
                 const dataToPenjualan = {
                     barang: v.id,
-                    qty: v.qty
+                    qty: v.qty,
+                    nama_barang: v.nama_barang
                 }
                 data1.push(dataToPenjualan)
 
                 refBarang.doc(v.id).set(dataToBarang)
             })
             data2 = {
-                id: uuidv4(),
+                // id: uuidv4(),
                 data: data1,
-                tanggal_penjualan: new Date(),
+                tanggal_penjualan: dayjs(new Date()).format('YYYY-MM-DD'),
                 total_pembelian: props.invoice.sum,
                 kasir: user.email,
                 total_bayar: parseInt(Bayar),
                 kembalian: (parseInt(Bayar) - parseInt(props.invoice.sum))
             }
-            refPenjualan.doc(data2.id).set(data2)
+            refPenjualan.doc().set(data2)
             await props.dispatch(editInvoice([]))
             await props.dispatch(sumInvoice(0))
             await props.dispatch(notification({ isSuccess: true, msg: 'Data berhasil di Submit!' }))

@@ -4,22 +4,52 @@ import bg from '../../Assets/bg2.png'
 import icon_filter from '../../Assets/Icon_filter.png'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
+import dayjs from 'dayjs'
+import firebase from '../../Firebase'
+import { confirm } from '../../Redux/action/confirm'
+import { notification } from '../../Redux/action/notification'
+import { Link, useHistory } from 'react-router-dom'
+
+const refPenjualan = firebase.firestore().collection("penjualan")
+const refBarang = firebase.firestore().collection("barang")
 
 const Riwayat = props => {
     const searchRef = useRef()
-    const [Search, setSearch] = useState('')
+    const history = useHistory()
+    const [FilterBulan, setFilterBulan] = useState(false)
+    const [FilterTanggal, setFilterTanggal] = useState(false)
     const [Riwayat, setRiwayat] = useState([])
+    const [Value, setValue] = useState({
+        startsAt: dayjs(new Date()).format('YYYY-MM-DD'),
+    })
 
     useEffect(() => {
         getRiwayat()
         return () => {
+            getRiwayat()
 
         }
-    }, [props.penjualan])
+    }, [])
 
-    const getRiwayat = () => {
-        setRiwayat(props.penjualan.dataPenjualan ? props.penjualan.dataPenjualan : [])
-        console.log(props.penjualan)
+    const getRiwayat = (date = null) => {
+        const today = {
+            startsAt: dayjs(new Date()).format('YYYY-MM-DD'),
+            endsAt: dayjs(new Date()).format('YYYY-MM-DD'),
+        }
+        const thisDate = date ? date : today
+
+        refPenjualan
+            .where('tanggal_penjualan', '>=', thisDate.startsAt)
+            .where('tanggal_penjualan', '<=', thisDate.endsAt)
+            .onSnapshot(async (snapShots) => {
+                const data = []
+                snapShots.forEach(docs => {
+                    let currentID = docs.id
+                    let appObj = { ...docs.data(), ['id']: currentID }
+                    data.push(appObj)
+                })
+                setRiwayat(data)
+            })
     }
 
     const focus = (ref) => {
@@ -30,18 +60,32 @@ const Riwayat = props => {
         ref.current.classList.toggle("hidden")
     }
 
+    const handleChangeFilter = (e) => {
+        if (e.target.value == "tanggal") {
+            setFilterTanggal(true)
+            setFilterBulan(false)
+        } else if (e.target.value == "bulan") {
+            setFilterTanggal(false)
+            setFilterBulan(true)
+        } else {
+            setFilterBulan(false)
+            setFilterTanggal(false)
+        }
+    }
+
     const ItemsComponent = ({ data }) => {
         const btnRef = useRef()
         return (
             <tr className="text-center">
                 <td>{data.id}</td>
+                {/* <td>{dayjs(data.tanggal_penjualan.toDate()).format('YYYY-MM-DD').toString()}</td> */}
                 <td>{data.tanggal_penjualan}</td>
                 <td>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(data.total_pembelian)}</td>
                 <td className="w-52">
                     <div className="relative flex">
                         <div ref={btnRef} className="absolute ml-8 hidden">
-                            <button className="focus:outline-none rounded-l-md bg-green-500 px-1 text-white">Detail</button>
-                            <button className="focus:outline-none rounded-r-md bg-red-500 px-1 text-white">Hapus</button>
+                            <button onClick={() => history.push('/riwayat/detail', data)} className="focus:outline-none rounded-l-md bg-green-500 px-1 text-white">Detail</button>
+                            <button onClick={() => openDialog(data)} className="focus:outline-none rounded-r-md bg-red-500 px-1 text-white">Hapus</button>
                         </div>
                         <button onClick={() => toggleBtn(btnRef)} className="focus:outline-none">
                             <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -53,24 +97,63 @@ const Riwayat = props => {
             </tr>)
     }
 
+    const initSearch = (endsAt) => {
+        const date = {
+            startsAt: Value.startsAt,
+            endsAt
+        }
+        console.log(date)
+        getRiwayat(date)
+    }
+
+    const initSearchWithMonth = (month) => {
+        const year = dayjs(new Date()).format('YYYY')
+        const date = {
+            startsAt: `${year}-${month}-01`,
+            endsAt: `${year}-${month}-31`
+        }
+        console.log(date)
+        getRiwayat(date)
+    }
+
+    const openDialog = async (data) => {
+        await props.dispatch(confirm({
+            visible: true,
+            title: "Hapus Riwayat",
+            msg: "Apakah anda yakin akan menghapus riwayat?",
+            onConfirm: () => onDelete(data)
+        }))
+    }
+
+    const onDelete = async (data) => {
+        data.data.map(async (v, i) => {
+            try {
+                refBarang.doc(v.barang).update({
+                    sisa_stok: firebase.firestore.FieldValue.increment(v.qty)
+                })
+            } catch (error) {
+                console.log(error)
+                await props.dispatch(notification({ isError: true, msg: 'Terjadi kesalahan!' }))
+                setTimeout(async () => {
+                    await props.dispatch(notification({ isError: false, msg: '' }))
+                }, 3000);
+            }
+        })
+
+        refPenjualan.doc(data.id).delete()
+        await props.dispatch(notification({ isSuccess: true, msg: 'Data berhasil di hapus!' }))
+        setTimeout(async () => {
+            await props.dispatch(notification({ isSuccess: false, msg: '' }))
+        }, 3000);
+    }
+
     return (
         <div style={{
             backgroundImage: `url(${bg})`,
             backgroundSize: 'cover',
-        }} className="bg-fixed px-20 pt-32 flex">
+        }} className={`bg-fixed px-20 pt-32 flex ${Riwayat.length < 20 ? 'h-screen' : ''}`}>
 
             <div className="flex flex-col flex-1">
-
-                {/* SEARCH BAR */}
-                <span className="self-end">gatau search apa</span>
-                <div onClick={() => focus(searchRef)} className="items-center flex relative self-end">
-                    <input disabled onChange={(e) => setSearch(e.target.value)} value={Search} ref={searchRef} className={`focus:outline-none pl-10 pr-14 rounded-lg py-2 border-2 border-purple-500 disabled:`} type="text" name="search" placeholder="Cari . . ." />
-                    <button className="absolute right-7 focus:outline-none">
-                        <svg className="" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path fillRule="evenodd" clipRule="evenodd" d="M14.9649 14.255H15.7549L20.7449 19.255L19.2549 20.745L14.2549 15.755V14.965L13.9849 14.685C12.8449 15.665 11.3649 16.255 9.75488 16.255C6.16488 16.255 3.25488 13.345 3.25488 9.755C3.25488 6.165 6.16488 3.255 9.75488 3.255C13.3449 3.255 16.2549 6.165 16.2549 9.755C16.2549 11.365 15.6649 12.845 14.6849 13.985L14.9649 14.255ZM5.25488 9.755C5.25488 12.245 7.26488 14.255 9.75488 14.255C12.2449 14.255 14.2549 12.245 14.2549 9.755C14.2549 7.26501 12.2449 5.255 9.75488 5.255C7.26488 5.255 5.25488 7.26501 5.25488 9.755Z" fill="#9B9EEB" />
-                        </svg>
-                    </button>
-                </div>
 
                 {/* SEMACAM HEADER? */}
                 <div className="flex justify-between mt-4">
@@ -96,28 +179,58 @@ const Riwayat = props => {
 
                 {/* MAIN CONTENT */}
                 <div className="flex mt-8">
-                    <table className="flex-1 text-purple-500 text-xl">
-                        <thead className="border-2 border-purple-500 rounded-lg">
-                            <tr>
-                                <th>Nota(ID)</th>
-                                <th>Tanggal</th>
-                                <th>Total Pembelian</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody className="border-2 border-purple-500">
-                            {/* LOOP AT TR */}
-                            {Riwayat.length > 0 &&
-                                Riwayat.map((data, index) => {
-                                    return <ItemsComponent key={data.id} data={data} />
-                                })
-                            }
-                        </tbody>
-                    </table>
-                    <button className="h-12 ml-2 flex items-center border-2 border-purple-500 rounded-lg p-3 text-purple-500 text-xl font-bold bg-white focus:outline-none">
-                        <img src={icon_filter} className="h-8 mr-2" />
-                        Filter
-                    </button>
+                    <div className="flex-1">
+                        <table className="w-full text-purple-500 text-xl">
+                            <thead className="border-2 border-purple-500 rounded-lg">
+                                <tr>
+                                    <th>Nota(ID)</th>
+                                    <th>Tanggal</th>
+                                    <th>Total Penjualan</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody className="border-2 border-purple-500">
+                                {/* LOOP AT TR */}
+                                {Riwayat.length > 0 &&
+                                    Riwayat.map((data, index) => {
+                                        return <ItemsComponent key={data.id} data={data} />
+                                    })
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="flex flex-col w-52">
+                        {/* <button ref={filterBtnRef} onClick={() => { toggleBtn(filterBtnRef); toggleBtn(filterRef) }} className="h-12 ml-2 flex items-center border-2 border-purple-500 rounded-lg p-3 text-purple-500 text-xl font-bold bg-white focus:outline-none">
+                            <img src={icon_filter} className="h-8 mr-2" />
+                            Filter
+                        </button> */}
+                        <select onChange={(e) => handleChangeFilter(e)} className="h-15 ml-2 flex items-center border-2 border-purple-500 rounded-lg p-3 text-purple-500 text-xl font-bold bg-white focus:outline-none">
+                            <option>Pilih Filter . . .</option>
+                            <option value="tanggal">Filter Tanggal</option>
+                            <option value="bulan">Filter Bulan</option>
+                        </select>
+                        <div className={`flex flex-col ${FilterTanggal ? '' : 'hidden'}`}>
+                            <span className="text-purple-500 ml-4">Dari</span>
+                            <input type="date" onChange={(e) => setValue({ startsAt: dayjs(e.target.value).format('YYYY-MM-DD') })} className="h-12 ml-2 flex items-center border-2 border-purple-500 rounded-lg p-3 text-purple-500 text-xl font-bold bg-white focus:outline-none" />
+                            <span className="text-purple-500 ml-4 mt-4">Hingga</span>
+                            <input type="date" onChange={(e) => initSearch(dayjs(e.target.value).format('YYYY-MM-DD'))} className=" h-12 ml-2 flex items-center border-2 border-purple-500 rounded-lg p-3 text-purple-500 text-xl font-bold bg-white focus:outline-none" />
+                        </div>
+                        <select onChange={e => initSearchWithMonth(e.target.value)} className={`${FilterBulan ? '' : 'hidden'} mt-4 h-15 ml-2 flex items-center border-2 border-purple-500 rounded-lg p-3 text-purple-500 text-xl font-bold bg-white focus:outline-none`}>
+                            <option>Pilih Bulan . . .</option>
+                            <option value={"01"}>Januari</option>
+                            <option value={"02"}>Februari</option>
+                            <option value={"03"}>Maret</option>
+                            <option value={"04"}>April</option>
+                            <option value={"05"}>Mei</option>
+                            <option value={"06"}>Juni</option>
+                            <option value={"07"}>Juli</option>
+                            <option value={"08"}>Agustus</option>
+                            <option value={"09"}>September</option>
+                            <option value={"10"}>Oktober</option>
+                            <option value={"11"}>November</option>
+                            <option value={"12"}>Desember</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
