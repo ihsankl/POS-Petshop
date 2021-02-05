@@ -20,7 +20,7 @@ const Barang = (props) => {
         return () => {
             
         }
-    }, [])
+    }, [props.barang.data])
 
     const getBarang = () => {
         setBarang(props.barang.data)

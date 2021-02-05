@@ -80,6 +80,7 @@ const Add = (props) => {
                 setTimeout(async () => {
                     await props.dispatch(notification({ isError: false, msg: '' }))
                 }, 3000);
+                console.log('/barang/add')
                 console.log(error)
             }
         }

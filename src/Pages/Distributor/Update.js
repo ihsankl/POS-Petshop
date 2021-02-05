@@ -79,6 +79,7 @@ const UpdateDistributor = props => {
                     await props.dispatch(notification({ isSuccess: false, msg: '' }))
                 }, 3000);
             } catch (error) {
+                console.log('/distributor/update')
                 console.log(error)
                 await props.dispatch(notification({ isError: true, msg: 'Terjadi Kesalahan!' }))
                 setTimeout(async () => {

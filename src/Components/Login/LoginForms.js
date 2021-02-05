@@ -119,6 +119,7 @@ const LoginForms = (props) => {
                     console.log(res)
                 } catch (error) {
                     console.log(error)
+                    console.log('/login')
                     await props.dispatch(notification({ isError: true, msg: 'Password tidak sama!' }))
                     setTimeout(async () => {
                         await props.dispatch(notification({ isError: false, msg: '' }))

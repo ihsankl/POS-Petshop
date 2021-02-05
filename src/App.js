@@ -118,7 +118,6 @@ const App = (props) => {
           data.push(appObj)
         })
         await props.dispatch(getDistributor(data))
-        console.log(props.distributor)
       })
   }
 

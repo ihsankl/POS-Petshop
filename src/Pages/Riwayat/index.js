@@ -132,6 +132,7 @@ const Riwayat = props => {
                     sisa_stok: firebase.firestore.FieldValue.increment(v.qty)
                 })
             } catch (error) {
+                console.log('riwayat')
                 console.log(error)
                 await props.dispatch(notification({ isError: true, msg: 'Terjadi kesalahan!' }))
                 setTimeout(async () => {

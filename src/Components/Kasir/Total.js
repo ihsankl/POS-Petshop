@@ -65,6 +65,7 @@ const Total = (props) => {
             setTimeout(async () => {
                 await props.dispatch(notification({ isError: false, msg: '' }))
             }, 3000);
+            console.log('/kasir/total')
             console.log(error)
         }
 
