@@ -18,6 +18,7 @@ const Riwayat = props => {
     const history = useHistory()
     const [FilterBulan, setFilterBulan] = useState(false)
     const [FilterTanggal, setFilterTanggal] = useState(false)
+    const [Tahun, setTahun] = useState(dayjs(new Date()).format('YYYY'))
     const [Riwayat, setRiwayat] = useState([])
     const [Value, setValue] = useState({
         startsAt: dayjs(new Date()).format('YYYY-MM-DD'),
@@ -26,7 +27,6 @@ const Riwayat = props => {
     useEffect(() => {
         getRiwayat()
         return () => {
-            getRiwayat()
 
         }
     }, [])
@@ -39,6 +39,7 @@ const Riwayat = props => {
         const thisDate = date ? date : today
 
         refPenjualan
+            .orderBy('tanggal_penjualan', 'desc')
             .where('tanggal_penjualan', '>=', thisDate.startsAt)
             .where('tanggal_penjualan', '<=', thisDate.endsAt)
             .onSnapshot(async (snapShots) => {
@@ -107,12 +108,11 @@ const Riwayat = props => {
     }
 
     const initSearchWithMonth = (month) => {
-        const year = dayjs(new Date()).format('YYYY')
+        const year = Tahun
         const date = {
             startsAt: `${year}-${month}-01`,
             endsAt: `${year}-${month}-31`
         }
-        console.log(date)
         getRiwayat(date)
     }
 
@@ -147,6 +147,20 @@ const Riwayat = props => {
         }, 3000);
     }
 
+    const renderTahun = () => {
+        let tahun = dayjs(new Date()).format('YYYY')
+        const data = []
+
+        for (let i = 0; i < 100; i++) {
+            data.push(<option value={parseInt(tahun) + i}>{parseInt(tahun) + i}</option>)
+        }
+        return data
+    }
+
+    const count = () => {
+        return Riwayat.reduce((acc, el) => acc + (el.total_pembelian), 0)
+    }
+
     return (
         <div style={{
             backgroundImage: `url(${bg})`,
@@ -169,7 +183,7 @@ const Riwayat = props => {
                         <span className="font-bold text-purple-500 text-2xl">Total Bersih</span>
                         <span className="font-bold text-green-400 text-2xl">-</span>
                     </div>
-                    <button className="flex items-center border-2 border-purple-500 rounded-lg p-3 text-purple-500 text-xl font-bold bg-white focus:outline-none">
+                    <button disabled className="bg-gray-300 flex items-center border-2 border-purple-500 rounded-lg p-3 text-purple-500 text-xl font-bold bg-white focus:outline-none">
                         <svg className="mr-2" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path fillRule="evenodd" clipRule="evenodd" d="M33.334 4.99997H31.6673V1.66664H28.334V4.99997H11.6673V1.66664H8.33398V4.99997H6.66732C4.83398 4.99997 3.33398 6.49997 3.33398 8.33331V35C3.33398 36.8333 4.83398 38.3333 6.66732 38.3333H33.334C35.1673 38.3333 36.6673 36.8333 36.6673 35V8.33331C36.6673 6.49997 35.1673 4.99997 33.334 4.99997ZM33.3341 35H6.66741V16.6666H33.3341V35ZM6.66741 13.3333H33.3341V8.33329H6.66741V13.3333Z" fill="#7579E7" />
                         </svg>
@@ -215,6 +229,10 @@ const Riwayat = props => {
                             <span className="text-purple-500 ml-4 mt-4">Hingga</span>
                             <input type="date" onChange={(e) => initSearch(dayjs(e.target.value).format('YYYY-MM-DD'))} className=" h-12 ml-2 flex items-center border-2 border-purple-500 rounded-lg p-3 text-purple-500 text-xl font-bold bg-white focus:outline-none" />
                         </div>
+                        <select onChange={(e) => setTahun(e.target.value)} className={`${FilterBulan ? '' : 'hidden'} mt-4 h-15 ml-2 flex items-center border-2 border-purple-500 rounded-lg p-3 text-purple-500 text-xl font-bold bg-white focus:outline-none`}>
+                            <option>Pilih Tahun . . .</option>
+                            {renderTahun()}
+                        </select>
                         <select onChange={e => initSearchWithMonth(e.target.value)} className={`${FilterBulan ? '' : 'hidden'} mt-4 h-15 ml-2 flex items-center border-2 border-purple-500 rounded-lg p-3 text-purple-500 text-xl font-bold bg-white focus:outline-none`}>
                             <option>Pilih Bulan . . .</option>
                             <option value={"01"}>Januari</option>
@@ -230,6 +248,13 @@ const Riwayat = props => {
                             <option value={"11"}>November</option>
                             <option value={"12"}>Desember</option>
                         </select>
+
+                        <div className={`mt-4 flex flex-col`}>
+                            <span className="text-purple-500 ml-4">Total</span>
+                            <div className="h-15 ml-2 flex items-center border-2 border-purple-500 rounded-lg p-3 text-purple-500 text-xl font-bold bg-white">
+                                <span>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(count())}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

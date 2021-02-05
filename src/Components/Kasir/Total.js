@@ -12,7 +12,7 @@ const refBarang = firebase.firestore().collection("barang")
 
 const Total = (props) => {
     const [Bayar, setBayar] = useState(0)
-    const [user, loading, error] = useAuthState(firebase.auth());
+    // const [user, loading, error] = useAuthState(firebase.auth());
 
 
     const queryToDb = async () => {
@@ -48,7 +48,7 @@ const Total = (props) => {
                 data: data1,
                 tanggal_penjualan: dayjs(new Date()).format('YYYY-MM-DD'),
                 total_pembelian: props.invoice.sum,
-                kasir: user.email,
+                kasir: props.user.userData.user.email,
                 total_bayar: parseInt(Bayar),
                 kembalian: (parseInt(Bayar) - parseInt(props.invoice.sum))
             }
@@ -101,6 +101,7 @@ const Total = (props) => {
 const mapStateToProps = state => {
     return {
         invoice: state.invoice,
+        user: state.user
     }
 }
 

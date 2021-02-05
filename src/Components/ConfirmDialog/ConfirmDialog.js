@@ -15,7 +15,7 @@ const ConfirmDialog = props => {
                         onClick={() => onClose()}
                         className="bg-red-500 hover:bg-red-600"
                     >
-                        <span>No</span>
+                        <span>Tidak</span>
                     </Button>
                 </div>
                 <div className="p-1">
@@ -26,7 +26,7 @@ const ConfirmDialog = props => {
                             onClose();
                         }}
                     >
-                        <span>Yes</span>
+                        <span>Ya</span>
                     </Button>
                 </div>
             </div>

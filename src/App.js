@@ -30,6 +30,9 @@ import Kasir from './Pages/Kasir/';
 import ConfirmDialog from './Components/ConfirmDialog/ConfirmDialog';
 import Riwayat from './Pages/Riwayat/';
 import DetailPenjualan from './Pages/Riwayat/Detail';
+import Distributor from './Pages/Distributor/';
+import UpdateDistributor from './Pages/Distributor/Update';
+import AddDistributor from './Pages/Distributor/Add';
 
 const refBarang = firebase.firestore().collection("barang")
 const refPenjualan = firebase.firestore().collection("penjualan")
@@ -41,7 +44,6 @@ const App = (props) => {
   useEffect(() => {
     enablePersistence()
     initializeBarang()
-    // initializePenjualan()
     window.addEventListener('online', handleConnectionChange)
     window.addEventListener('offline', handleConnectionChange);
     handleConnectionChange()
@@ -92,23 +94,6 @@ const App = (props) => {
       return;
     }
     await props.dispatch(checkConnection('disconnected'))
-  }
-
-  const initializePenjualan = () => {
-    const today = dayjs(new Date()).format('YYYY-MM-DD')
-
-    refPenjualan
-      .where('tanggal_penjualan', '==', today)
-      .onSnapshot(async (snapShots) => {
-        const data = []
-        snapShots.forEach(docs => {
-          let currentID = docs.id
-          let appObj = { ...docs.data(), ['id']: currentID }
-          data.push(appObj)
-        })
-        await props.dispatch(getPenjualan(data))
-      })
-
   }
 
   const initializeBarang = () => {
@@ -180,6 +165,15 @@ const App = (props) => {
           </Route>
           <Route exact path="/riwayat/detail">
             {props.user.isSigned ? <DetailPenjualan /> : <Redirect to="/login" />}
+          </Route>
+          <Route exact path="/distributor">
+            {props.user.isSigned ? <Distributor /> : <Redirect to="/login" />}
+          </Route>
+          <Route exact path="/distributor/add">
+            {props.user.isSigned ? <AddDistributor /> : <Redirect to="/login" />}
+          </Route>
+          <Route exact path="/distributor/update">
+            {props.user.isSigned ? <UpdateDistributor /> : <Redirect to="/login" />}
           </Route>
           <Route exact path="/kasir">
             {props.user.isSigned ? <Kasir /> : <Redirect to="/login" />}
