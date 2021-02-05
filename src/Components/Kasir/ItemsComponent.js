@@ -50,7 +50,7 @@ const mapStateToProps = state => {
     return {
         connection: state.checkConnection,
         notification: state.notification,
-        dataBarang: state.dataBarang,
+        barang: state.barang,
         invoice: state.invoice,
     }
 }

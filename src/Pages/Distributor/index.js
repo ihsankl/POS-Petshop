@@ -29,16 +29,7 @@ const Distributor = props => {
     }
 
     const getDistributor = () => {
-        refDistributor
-            .orderBy('nama_distributor').onSnapshot(async (snapShots) => {
-                const data = []
-                snapShots.forEach(docs => {
-                    let currentID = docs.id
-                    let appObj = { ...docs.data(), ['id']: currentID }
-                    data.push(appObj)
-                })
-                setDistributor(data)
-            })
+        setDistributor(props.distributor.data)
     }
 
     const openDialog = async (id) => {
@@ -69,7 +60,7 @@ const Distributor = props => {
 
         return (
             <div className="ml-4 mb-4 rounded-md border-2 border-purple-500 w-96 bg-white flex p-2">
-                
+
                 <div className="p-4 h-24 flex justify-center items-center">
                     {/* TODO: SHOW IMAGE */}
                     <span className="">IMAGE HERE</span>
@@ -111,7 +102,7 @@ const Distributor = props => {
         <div style={{
             backgroundImage: `url(${bg})`,
             backgroundSize: 'cover',
-        }} className={`flex flex-col bg-fixed px-20 pt-32 ${Distributor.length > 20 ? '':'h-screen'}`}>
+        }} className={`flex flex-col bg-fixed px-20 pt-32 ${Distributor.length > 20 ? '' : 'h-screen'}`}>
             <div className="flex justify-end">
 
                 {/* SEARCH BAR */}
@@ -149,7 +140,7 @@ const mapStateToProps = state => {
     return {
         connection: state.checkConnection,
         confirm: state.confirm,
-        dataDistributor: state.dataDistributor,
+        distributor: state.distributor
     }
 }
 

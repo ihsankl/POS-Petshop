@@ -2,9 +2,9 @@ const initialState = {
     data: [],
 }
 
-const barang = (state = initialState, action) => {
+const distributor = (state = initialState, action) => {
     switch (action.type) {
-        case 'GET_BARANG_FULFILLED':
+        case 'GET_DISTRIBUTOR_FULFILLED':
             return {
                 data: action.payload,
             }
@@ -14,4 +14,4 @@ const barang = (state = initialState, action) => {
     }
 }
 
-export default barang
+export default distributor

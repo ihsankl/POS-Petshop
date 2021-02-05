@@ -133,7 +133,6 @@ const mapStateToProps = state => {
     return {
         connection: state.checkConnection,
         confirm: state.confirm,
-        dataDistributor: state.dataDistributor,
     }
 }
 

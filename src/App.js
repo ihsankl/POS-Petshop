@@ -3,14 +3,12 @@ import React, { useEffect, useState } from 'react'
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 import { compose } from "redux";
 import { connect } from 'react-redux';
-import dayjs from 'dayjs'
 
 // REDUX ACTIONS
 import { checkConnection } from './Redux/action/checkConnection'
 import { getBarang } from './Redux/action/barang'
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { confirm } from './Redux/action/confirm';
-import { getPenjualan } from './Redux/action/penjualan';
+import { getDistributor } from './Redux/action/distributor';
 
 // FIREBASE
 import firebase from './Firebase'
@@ -35,6 +33,7 @@ import UpdateDistributor from './Pages/Distributor/Update';
 import AddDistributor from './Pages/Distributor/Add';
 
 const refBarang = firebase.firestore().collection("barang")
+const refDistributor = firebase.firestore().collection("distributor")
 const refPenjualan = firebase.firestore().collection("penjualan")
 
 const App = (props) => {
@@ -44,6 +43,7 @@ const App = (props) => {
   useEffect(() => {
     enablePersistence()
     initializeBarang()
+    initializeDistributor()
     window.addEventListener('online', handleConnectionChange)
     window.addEventListener('offline', handleConnectionChange);
     handleConnectionChange()
@@ -106,6 +106,20 @@ const App = (props) => {
       })
       await props.dispatch(getBarang(data))
     })
+  }
+
+  const initializeDistributor = () => {
+    refDistributor
+      .orderBy('nama_distributor').onSnapshot(async (snapShots) => {
+        const data = []
+        snapShots.forEach(docs => {
+          let currentID = docs.id
+          let appObj = { ...docs.data(), ['id']: currentID }
+          data.push(appObj)
+        })
+        await props.dispatch(getDistributor(data))
+        console.log(props.distributor)
+      })
   }
 
   const closeDialog = async () => {
@@ -192,7 +206,8 @@ const mapStateToProps = state => {
     connection: state.checkConnection,
     notification: state.notification,
     confirm: state.confirm,
-    user: state.user
+    user: state.user,
+    distributor: state.distributor
   }
 }
 

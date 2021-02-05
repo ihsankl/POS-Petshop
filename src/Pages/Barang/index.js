@@ -23,7 +23,7 @@ const Barang = (props) => {
     }, [])
 
     const getBarang = () => {
-        setBarang(props.dataBarang.barang)
+        setBarang(props.barang.data)
     }
 
     const openDialog = async (id) => {
@@ -142,7 +142,7 @@ const mapStateToProps = state => {
     return {
         connection: state.checkConnection,
         confirm: state.confirm,
-        dataBarang: state.dataBarang,
+        barang: state.barang,
     }
 }
 

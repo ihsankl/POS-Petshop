@@ -40,7 +40,7 @@ const Kasir = (props) => {
     }
 
     const initFindCode = async (value, list) => {
-        const isExist = _.findWhere(props.dataBarang.barang, { kode_barang: value })
+        const isExist = _.findWhere(props.barang.data, { kode_barang: value })
         const toProcess = {
             ...isExist,
             qty: 1
@@ -55,7 +55,7 @@ const Kasir = (props) => {
         setKodebarang('')
     }
 
-    const Items = props.dataBarang.barang.filter((data) => {
+    const Items = props.barang.data.filter((data) => {
         if (Search == '')
             return data
         else if (data.nama_barang.toLowerCase().includes(Search.toLowerCase()) || data.kode_barang.toLowerCase().includes(Search.toLowerCase())) {
@@ -87,7 +87,7 @@ const Kasir = (props) => {
                 </div>
 
                 <div className="flex flex-wrap mt-8">
-                    {props.dataBarang.barang.length > 0 && Items}
+                    {props.barang.data.length > 0 && Items}
                 </div>
             </div>
 
@@ -123,7 +123,7 @@ const mapStateToProps = state => {
     return {
         connection: state.checkConnection,
         notification: state.notification,
-        dataBarang: state.dataBarang,
+        barang: state.barang,
         invoice: state.invoice,
     }
 }

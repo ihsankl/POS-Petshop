@@ -1,19 +1,21 @@
 import { combineReducers } from 'redux'
 import checkConnection from './checkConnection'
 import notification from './notification'
-import dataBarang from './barang'
+import barang from './barang'
 import invoice from './invoice'
 import confirm from './confirm'
 import penjualan from './penjualan'
 import user from './user'
+import distributor from './distributor'
 
 const appReducer = combineReducers({
     checkConnection,
     notification,
-    dataBarang,
+    barang,
     invoice,
     confirm,
     penjualan,
+    distributor,
     user
 })
 
