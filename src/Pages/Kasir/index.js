@@ -45,7 +45,7 @@ const Kasir = (props) => {
             ...isExist,
             qty: 1
         }
-        if (isExist) {
+        if (isExist && isExist.sisa_stok !== 0) {
             const isExistOnInvoice = _.findWhere(list, { kode_barang: value })
             if (!isExistOnInvoice) {
                 list.push(toProcess)

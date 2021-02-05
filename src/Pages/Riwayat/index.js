@@ -159,15 +159,15 @@ const Riwayat = props => {
                 <div className="flex justify-between mt-4">
                     <div className="flex flex-col">
                         <span className="font-bold text-purple-500 text-2xl">Total Pemasukan Tahunan</span>
-                        <span className="font-bold text-green-400 text-2xl">Rp. 900.000.000</span>
+                        <span className="font-bold text-green-400 text-2xl">-</span>
                     </div>
                     <div className="flex flex-col">
-                        <span className="font-bold text-purple-500 text-2xl">Total Pemasukan Tahunan</span>
-                        <span className="font-bold text-red-400 text-2xl">Rp. 900.000.000</span>
+                        <span className="font-bold text-purple-500 text-2xl">Total Pengeluaran Tahunan</span>
+                        <span className="font-bold text-red-400 text-2xl">-</span>
                     </div>
                     <div className="flex flex-col">
-                        <span className="font-bold text-purple-500 text-2xl">Total Pemasukan Tahunan</span>
-                        <span className="font-bold text-green-400 text-2xl">Rp. 900.000.000</span>
+                        <span className="font-bold text-purple-500 text-2xl">Total Bersih</span>
+                        <span className="font-bold text-green-400 text-2xl">-</span>
                     </div>
                     <button className="flex items-center border-2 border-purple-500 rounded-lg p-3 text-purple-500 text-xl font-bold bg-white focus:outline-none">
                         <svg className="mr-2" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -77,7 +77,7 @@ const DetailPenjualan = props => {
         <div style={{
             backgroundImage: `url(${bg})`,
             backgroundSize: 'cover',
-        }} className={`bg-fixed px-20 pt-32 flex ${Detail.data.length < 20 ? 'h-screen' : ''}`}>
+        }} className={`bg-fixed px-20 pt-32 flex ${Detail.data && Detail.data.length < 20 ? 'h-screen' : ''}`}>
             <div className="flex flex-col flex-1">
                 <div className="flex text-purple-500">
                     <div className="w-1/2 flex">
@@ -97,23 +97,28 @@ const DetailPenjualan = props => {
                     <div className="flex flex-col flex-1">
 
                         {/* TABEL DETAIL */}
-                        <span className="flex-1 text-3xl font-bold">Jumlah Barang</span>
-                        <table className="w-full text-purple-500 text-xl mt-8">
-                            <thead className="border-2 border-purple-500 rounded-lg">
-                                <tr>
-                                    <th>Nama Barang</th>
-                                    <th>Jumlah</th>
-                                </tr>
-                            </thead>
-                            <tbody className="border-2 border-purple-500">
-                                {/* LOOP AT TR */}
-                                {Detail.data.length > 0 &&
-                                    Detail.data.map((data, index) => {
-                                        return <ItemsComponent key={index} data={data} />
-                                    })
-                                }
-                            </tbody>
-                        </table>
+                        {Detail.data &&
+                            <>
+                                <span className="flex-1 text-3xl font-bold">Jumlah Barang</span>
+                                <table className="w-full text-purple-500 text-xl mt-8">
+                                    <thead className="border-2 border-purple-500 rounded-lg">
+                                        <tr>
+                                            <th>Nama Barang</th>
+                                            <th>Jumlah</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="border-2 border-purple-500">
+                                        {/* LOOP AT TR */}
+                                        {Detail.data.length > 0 &&
+                                            Detail.data.map((data, index) => {
+                                                return <ItemsComponent key={index} data={data} />
+                                            })
+                                        }
+                                    </tbody>
+                                </table>
+                            </>
+                        }
+
                     </div>
 
                     {/* TOTAL */}
