@@ -112,7 +112,7 @@ const UpdateDistributor = props => {
                     <div className="flex">
                         <div className="flex flex-col">
                             <span className="text-2xl pt-8">Telepon</span>
-                            <input type="telepon" name="telepon" value={Values.telepon} onChange={onChangeValue} className="w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="Telepon . . ." />
+                            <input type="number" name="telepon" value={Values.telepon} onChange={onChangeValue} className="w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="Telepon . . ." />
                         </div>
                     </div>
                     <div className="flex text-white mt-8">

@@ -96,7 +96,7 @@ const Distributor = props => {
     const Items = Distributor.filter((data) => {
         if (Search == '')
             return data
-        else if (data.nama_barang.toLowerCase().includes(Search.toLowerCase()) || data.kode_barang.toLowerCase().includes(Search.toLowerCase())) {
+        else if (data.nama_distributor.toLowerCase().includes(Search.toLowerCase()) || data.alamat.toLowerCase().includes(Search.toLowerCase()) || data.telepon.toLowerCase().includes(Search.toLowerCase())) {
             return data
         }
     }).map(data => {
