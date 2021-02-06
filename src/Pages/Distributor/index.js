@@ -22,7 +22,7 @@ const Distributor = props => {
         return () => {
 
         }
-    }, [])
+    }, [props.distributor.data])
 
     const focus = (ref) => {
         ref.current.focus()
@@ -102,7 +102,7 @@ const Distributor = props => {
         <div style={{
             backgroundImage: `url(${bg})`,
             backgroundSize: 'cover',
-        }} className={`flex flex-col bg-fixed px-20 pt-32 ${Distributor.length > 20 ? '' : 'h-screen'}`}>
+        }} className={`flex flex-col bg-fixed px-20 pt-32 ${Distributor.length > 12 ? '' : 'h-screen'}`}>
             <div className="flex justify-end">
 
                 {/* SEARCH BAR */}

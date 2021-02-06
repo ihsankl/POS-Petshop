@@ -13,7 +13,6 @@ const AddDistributor = props => {
     const history = useHistory()
     const location = useLocation()
     const [Values, setValues] = useState({
-        id: '',
         nama_distributor: '',
         alamat: '',
         telepon: '',
@@ -42,6 +41,7 @@ const AddDistributor = props => {
         } else {
             try {
                 if (props.connection.connectionStatus === 'disconnected') {
+                    // TODO: CHECK DATA LIKE CONNECTED STATUS
                     refDistributor.doc().set(Values)
                     setValues({
                         nama_distributor: '',
@@ -50,20 +50,26 @@ const AddDistributor = props => {
                     })
                     history.push('/distributor')
                 } else {
-
-                    await refDistributor.doc().set(Values)
-                    setValues({
-                        nama_distributor: '',
-                        alamat: '',
-                        telepon: '',
-                    })
-                    history.push('/distributor')
+                    const query = await refDistributor.where('nama_distributor', '==', Values.nama_distributor).get()
+                    if (!query.empty) {
+                        await props.dispatch(notification({ isError: true, msg: 'Data sudah ada!' }))
+                        setTimeout(async () => {
+                            await props.dispatch(notification({ isError: false, msg: '' }))
+                        }, 3000);
+                    } else {
+                        await refDistributor.doc().set(Values)
+                        await props.dispatch(notification({ isSuccess: true, msg: 'Data berhasil di Tambah!' }))
+                        setTimeout(async () => {
+                            await props.dispatch(notification({ isSuccess: false, msg: '' }))
+                        }, 3000);
+                        setValues({
+                            nama_distributor: '',
+                            alamat: '',
+                            telepon: '',
+                        })
+                        history.push('/distributor')
+                    }
                 }
-
-                await props.dispatch(notification({ isSuccess: true, msg: 'Data berhasil di Update!' }))
-                setTimeout(async () => {
-                    await props.dispatch(notification({ isSuccess: false, msg: '' }))
-                }, 3000);
             } catch (error) {
                 console.log('/barang/add')
                 console.log(error)

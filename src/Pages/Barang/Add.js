@@ -12,16 +12,17 @@ const Add = (props) => {
     const [Values, setValues] = useState({
         nama_barang: '',
         kode_barang: '',
-        sisa_stok: '',
+        sisa_stok: 0,
         harga_jual: '',
         harga_distributor: '',
         harga_pokok: '',
-        ppn: '',
+        ppn: 0,
         diskon: '',
     })
 
     const onChangeValue = (e) => {
         const { name, value } = e.target
+        let diskon = name
         setValues({
             ...Values,
             [name]: value
@@ -37,6 +38,7 @@ const Add = (props) => {
         } else {
             try {
                 if (props.connection.connectionStatus === 'disconnected') {
+                    // TODO: CHECK DATA LIKE CONNECTED STATUS
                     refBarang.doc().set(Values)
                     setValues({
                         nama_barang: '',
@@ -58,6 +60,10 @@ const Add = (props) => {
                         }, 3000);
                     } else {
                         await refBarang.doc().set(Values)
+                        await props.dispatch(notification({ isSuccess: true, msg: 'Data berhasil di Tambah!' }))
+                        setTimeout(async () => {
+                            await props.dispatch(notification({ isSuccess: false, msg: '' }))
+                        }, 3000);
                         setValues({
                             nama_barang: '',
                             kode_barang: '',
@@ -71,10 +77,7 @@ const Add = (props) => {
                         history.push('/barang')
                     }
                 }
-                await props.dispatch(notification({ isSuccess: true, msg: 'Data berhasil di input!' }))
-                setTimeout(async () => {
-                    await props.dispatch(notification({ isSuccess: false, msg: '' }))
-                }, 3000);
+
             } catch (error) {
                 await props.dispatch(notification({ isError: true, msg: 'Terjadi Kesalahan!' }))
                 setTimeout(async () => {
@@ -126,18 +129,18 @@ const Add = (props) => {
                         </div>
                         <div className="flex flex-col ml-4">
                             <span className="text-2xl pt-8">Diskon</span>
-                            <input type="number" name="diskon" value={Values.diskon} onChange={onChangeValue} className="w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="Diskon . . ." />
+                            <input type="number" min={0} max={100} name="diskon" value={Values.diskon} onChange={onChangeValue} className="w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="Diskon . . ." />
                         </div>
                     </div>
 
                     <div className="flex">
                         <div className="flex flex-col">
                             <span className="text-2xl pt-8">PPN</span>
-                            <input type="number" name="ppn" value={Values.ppn} onChange={onChangeValue} className="w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="PPN . . ." />
+                            <input disabled type="number" name="ppn" value={Values.ppn} onChange={onChangeValue} className="bg-gray-300 w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="PPN . . ." />
                         </div>
                         <div className="flex flex-col ml-4">
                             <span className="text-2xl pt-8">Sisa Stok</span>
-                            <input type="number" name="sisa_stok" value={Values.sisa_stok} onChange={onChangeValue} className="w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="Sisa Stok . . ." />
+                            <input disabled type="number" name="sisa_stok" value={Values.sisa_stok} onChange={onChangeValue} className="bg-gray-300 w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="Sisa Stok . . ." />
                         </div>
                     </div>
 

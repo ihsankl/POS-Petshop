@@ -31,6 +31,9 @@ import DetailPenjualan from './Pages/Riwayat/Detail';
 import Distributor from './Pages/Distributor/';
 import UpdateDistributor from './Pages/Distributor/Update';
 import AddDistributor from './Pages/Distributor/Add';
+import StokBarang from './Pages/StokBarang/';
+import AddStokBarang from './Pages/StokBarang/Add';
+import UpdateStokBarang from './Pages/StokBarang/Update';
 
 const refBarang = firebase.firestore().collection("barang")
 const refDistributor = firebase.firestore().collection("distributor")
@@ -190,6 +193,15 @@ const App = (props) => {
           </Route>
           <Route exact path="/kasir">
             {props.user.isSigned ? <Kasir /> : <Redirect to="/login" />}
+          </Route>
+          <Route exact path="/stok_barang">
+            {props.user.isSigned ? <StokBarang /> : <Redirect to="/login" />}
+          </Route>
+          <Route exact path="/stok_barang/add">
+            {props.user.isSigned ? <AddStokBarang /> : <Redirect to="/login" />}
+          </Route>
+          <Route exact path="/stok_barang/update">
+            {props.user.isSigned ? <UpdateStokBarang /> : <Redirect to="/login" />}
           </Route>
           <Route path="*">
             <NotFound />

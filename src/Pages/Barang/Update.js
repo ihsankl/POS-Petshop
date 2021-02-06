@@ -18,7 +18,7 @@ const Update = (props) => {
         harga_jual: '',
         harga_pokok: '',
         harga_distributor: '',
-        ppn: '',
+        ppn: 0,
         diskon: '',
     })
 
@@ -79,6 +79,10 @@ const Update = (props) => {
                 } else {
 
                     await refBarang.doc(Values.id).set(Values)
+                    await props.dispatch(notification({ isSuccess: true, msg: 'Data berhasil di Update!' }))
+                    setTimeout(async () => {
+                        await props.dispatch(notification({ isSuccess: false, msg: '' }))
+                    }, 3000);
                     setValues({
                         nama_barang: '',
                         kode_barang: '',
@@ -92,10 +96,7 @@ const Update = (props) => {
                     history.push('/barang')
                 }
 
-                await props.dispatch(notification({ isSuccess: true, msg: 'Data berhasil di Update!' }))
-                setTimeout(async () => {
-                    await props.dispatch(notification({ isSuccess: false, msg: '' }))
-                }, 3000);
+
             } catch (error) {
                 console.log('/barang/update')
                 console.log(error)
@@ -147,13 +148,13 @@ const Update = (props) => {
                         </div>
                         <div className="flex flex-col ml-4">
                             <span className="text-2xl pt-8">Diskon</span>
-                            <input type="number" name="diskon" value={Values.diskon} onChange={onChangeValue} className="w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="Diskon . . ." />
+                            <input type="number" min={0} max={100} name="diskon" value={Values.diskon} onChange={onChangeValue} className="w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="Diskon . . ." />
                         </div>
                     </div>
                     <div className="flex">
                         <div className="flex flex-col">
                             <span className="text-2xl pt-8">PPN</span>
-                            <input type="number" name="ppn" value={Values.ppn} onChange={onChangeValue} className="w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="PPN . . ." />
+                            <input disabled type="number" name="ppn" value={Values.ppn} onChange={onChangeValue} className="bg-gray-300 w-96 p-2 focus:outline-none text-3xl text-purple-500 font-bold border-2 border-purple-500 rounded-lg" placeholder="PPN . . ." />
                         </div>
                         <div className="flex flex-col ml-4">
                             <span className="text-2xl pt-8">Sisa Stok</span>

@@ -54,7 +54,7 @@ const DetailPenjualan = props => {
         data.data.map(async (v, i) => {
             try {
                 refBarang.doc(v.barang).update({
-                    sisa_stok: firebase.firestore.FieldValue.increment(v.qty)
+                    sisa_stok: firebase.firestore.FieldValue.increment(parseInt(v.qty))
                 })
             } catch (error) {
                 console.log('riwayat/detail')

@@ -1,47 +1,63 @@
 import React, { useEffect, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 import bg from '../../Assets/bg2.png'
-import icon_filter from '../../Assets/Icon_filter.png'
-import { connect } from 'react-redux'
 import { compose } from 'redux'
+import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
+import plus from '../../Assets/plus.png'
 import dayjs from 'dayjs'
 import firebase from '../../Firebase'
-import { confirm } from '../../Redux/action/confirm'
+import _ from 'underscore'
 import { notification } from '../../Redux/action/notification'
-import { Link, useHistory } from 'react-router-dom'
+import { confirm } from '../../Redux/action/confirm'
 
-const refPenjualan = firebase.firestore().collection("penjualan")
-const refBarang = firebase.firestore().collection("barang")
+const refStokBarang = firebase.firestore().collection("pasok")
 
-const Riwayat = props => {
+const StokBarang = props => {
     const searchRef = useRef()
-    const history = useHistory()
+    const [StokBarang, setStokBarang] = useState([])
+    const [Search, setSearch] = useState('')
     const [FilterBulan, setFilterBulan] = useState(false)
     const [FilterTanggal, setFilterTanggal] = useState(false)
     const [Tahun, setTahun] = useState(dayjs(new Date()).format('YYYY'))
-    const [Riwayat, setRiwayat] = useState([])
     const [Value, setValue] = useState({
         startsAt: dayjs(new Date()).format('YYYY-MM-DD'),
     })
 
     useEffect(() => {
-        getRiwayat()
+        getStokBarang()
         return () => {
 
         }
     }, [])
 
-    const getRiwayat = (date = null) => {
+    const getBarang = (value) => {
+        const isExist = _.findWhere(props.barang.data, { id: value })
+        if (isExist) {
+            return isExist.nama_barang
+        }
+        return 'Tidak ditemukan'
+    }
+
+    const getDistributor = (value) => {
+        const isExist = _.findWhere(props.distributor.data, { id: value })
+        if (isExist) {
+            return isExist.nama_distributor
+        }
+        return 'Tidak ditemukan'
+    }
+
+    const getStokBarang = (date = null) => {
         const today = {
             startsAt: dayjs(new Date()).format('YYYY-MM-DD'),
             endsAt: dayjs(new Date()).format('YYYY-MM-DD'),
         }
         const thisDate = date ? date : today
 
-        refPenjualan
-            .orderBy('tanggal_penjualan', 'desc')
-            .where('tanggal_penjualan', '>=', thisDate.startsAt)
-            .where('tanggal_penjualan', '<=', thisDate.endsAt)
+        refStokBarang
+            .orderBy('tanggal_beli', 'desc')
+            .where('tanggal_beli', '>=', thisDate.startsAt)
+            .where('tanggal_beli', '<=', thisDate.endsAt)
             .onSnapshot(async (snapShots) => {
                 const data = []
                 snapShots.forEach(docs => {
@@ -49,8 +65,13 @@ const Riwayat = props => {
                     let appObj = { ...docs.data(), ['id']: currentID }
                     data.push(appObj)
                 })
-                setRiwayat(data)
+                setStokBarang(data)
             })
+    }
+
+
+    const focus = (ref) => {
+        ref.current.focus()
     }
 
     const toggleBtn = (ref) => {
@@ -70,19 +91,69 @@ const Riwayat = props => {
         }
     }
 
+    const renderTahun = () => {
+        let tahun = '2000'
+        const data = []
+
+        for (let i = 0; i < 100; i++) {
+            data.push(<option value={parseInt(tahun) + i}>{parseInt(tahun) + i}</option>)
+        }
+        return data
+    }
+
+    const initSearchWithMonth = (month) => {
+        const year = Tahun
+        const date = {
+            startsAt: `${year}-${month}-01`,
+            endsAt: `${year}-${month}-31`
+        }
+        getStokBarang(date)
+    }
+
+    const initSearch = (endsAt) => {
+        const date = {
+            startsAt: Value.startsAt,
+            endsAt
+        }
+        getStokBarang(date)
+    }
+
+    const count = () => {
+        return StokBarang.reduce((acc, el) => parseInt(acc) + (parseInt(el.total)), 0)
+    }
+
+    const openDialog = async (id) => {
+        await props.dispatch(confirm({
+            visible: true,
+            title: "Hapus Stok Barang",
+            msg: "Apakah anda yakin akan menghapus Stok Barang?",
+            onConfirm: () => onDelete(id)
+        }))
+    }
+
+    const onDelete = async (id) => {
+        refStokBarang.doc(id).delete()
+        await props.dispatch(notification({ isSuccess: true, msg: 'Data berhasil di hapus!' }))
+        setTimeout(async () => {
+            await props.dispatch(notification({ isSuccess: false, msg: '' }))
+        }, 3000);
+    }
+
     const ItemsComponent = ({ data }) => {
         const btnRef = useRef()
         return (
             <tr className="text-center">
-                <td>{data.id}</td>
-                {/* <td>{dayjs(data.tanggal_penjualan.toDate()).format('YYYY-MM-DD').toString()}</td> */}
-                <td>{data.tanggal_penjualan}</td>
-                <td>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(data.total_pembelian)}</td>
+                <td>{getBarang(data.barang)}</td>
+                <td>{getDistributor(data.distributor)}</td>
+                <td>{data.qty}</td>
+                <td>{data.tanggal_beli}</td>
+                <td>{data.tanggal_expired}</td>
+                <td>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(data.total)}</td>
                 <td className="w-52">
                     <div className="relative flex">
                         <div ref={btnRef} className="absolute ml-8 hidden">
-                            <button onClick={() => history.push('/riwayat/detail', data)} className="focus:outline-none rounded-l-md bg-green-500 px-1 text-white">Detail</button>
-                            <button onClick={() => openDialog(data)} className="focus:outline-none rounded-r-md bg-red-500 px-1 text-white">Hapus</button>
+                            <Link to={{ pathname: '/stok_barang/update', state: data }} className="focus:outline-none rounded-l-md bg-green-500 px-1 text-white">Update</Link>
+                            <button onClick={() => openDialog(data.id)} className="focus:outline-none rounded-r-md bg-red-500 px-1 text-white">Hapus</button>
                         </div>
                         <button onClick={() => toggleBtn(btnRef)} className="focus:outline-none">
                             <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -94,97 +165,19 @@ const Riwayat = props => {
             </tr>)
     }
 
-    const initSearch = (endsAt) => {
-        const date = {
-            startsAt: Value.startsAt,
-            endsAt
-        }
-        getRiwayat(date)
-    }
-
-    const initSearchWithMonth = (month) => {
-        const year = Tahun
-        const date = {
-            startsAt: `${year}-${month}-01`,
-            endsAt: `${year}-${month}-31`
-        }
-        getRiwayat(date)
-    }
-
-    const openDialog = async (data) => {
-        await props.dispatch(confirm({
-            visible: true,
-            title: "Hapus Riwayat",
-            msg: "Apakah anda yakin akan menghapus riwayat?",
-            onConfirm: () => onDelete(data)
-        }))
-    }
-
-    const onDelete = async (data) => {
-        data.data.map(async (v, i) => {
-            try {
-                refBarang.doc(v.barang).update({
-                    sisa_stok: firebase.firestore.FieldValue.increment(parseInt(v.qty))
-                })
-            } catch (error) {
-                console.log('riwayat')
-                console.log(error)
-                await props.dispatch(notification({ isError: true, msg: 'Terjadi kesalahan!' }))
-                setTimeout(async () => {
-                    await props.dispatch(notification({ isError: false, msg: '' }))
-                }, 3000);
-            }
-        })
-
-        refPenjualan.doc(data.id).delete()
-        await props.dispatch(notification({ isSuccess: true, msg: 'Data berhasil di hapus!' }))
-        setTimeout(async () => {
-            await props.dispatch(notification({ isSuccess: false, msg: '' }))
-        }, 3000);
-    }
-
-    const renderTahun = () => {
-        let tahun = '2000'
-        const data = []
-
-        for (let i = 0; i < 100; i++) {
-            data.push(<option value={parseInt(tahun) + i}>{parseInt(tahun) + i}</option>)
-        }
-        return data
-    }
-
-    const count = () => {
-        return Riwayat.reduce((acc, el) => parseInt(acc) + (parseInt(el.total_pembelian)), 0)
-    }
-
     return (
         <div style={{
             backgroundImage: `url(${bg})`,
             backgroundSize: 'cover',
-        }} className={`bg-fixed px-20 pt-32 flex ${Riwayat.length < 20 ? 'h-screen' : ''}`}>
-
+        }} className={`bg-fixed px-20 pt-32 flex ${StokBarang.length < 20 ? 'h-screen' : ''}`}>
             <div className="flex flex-col flex-1">
 
-                {/* SEMACAM HEADER? */}
-                <div className="flex justify-between mt-4">
-                    <div className="flex flex-col">
-                        <span className="font-bold text-purple-500 text-2xl">Total Pemasukan Tahunan</span>
-                        <span className="font-bold text-green-400 text-2xl">-</span>
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="font-bold text-purple-500 text-2xl">Total Pengeluaran Tahunan</span>
-                        <span className="font-bold text-red-400 text-2xl">-</span>
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="font-bold text-purple-500 text-2xl">Total Bersih</span>
-                        <span className="font-bold text-green-400 text-2xl">-</span>
-                    </div>
-                    <button disabled className="bg-gray-300 flex items-center border-2 border-purple-500 rounded-lg p-3 text-purple-500 text-xl font-bold bg-white focus:outline-none">
-                        <svg className="mr-2" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path fillRule="evenodd" clipRule="evenodd" d="M33.334 4.99997H31.6673V1.66664H28.334V4.99997H11.6673V1.66664H8.33398V4.99997H6.66732C4.83398 4.99997 3.33398 6.49997 3.33398 8.33331V35C3.33398 36.8333 4.83398 38.3333 6.66732 38.3333H33.334C35.1673 38.3333 36.6673 36.8333 36.6673 35V8.33331C36.6673 6.49997 35.1673 4.99997 33.334 4.99997ZM33.3341 35H6.66741V16.6666H33.3341V35ZM6.66741 13.3333H33.3341V8.33329H6.66741V13.3333Z" fill="#7579E7" />
-                        </svg>
-                        Riwayat tahunan
-                    </button>
+                {/* ADD BUTTON */}
+                <div className="items-center flex justify-end mt-10">
+                    <Link to="/stok_barang/add" className="flex border-2 border-purple-500 rounded-lg p-2 focus:outline-none bg-white">
+                        <img src={plus} className="w-8" />
+                        <span className="font-bold text-purple-400 text-lg">Tambah Stok Barang</span>
+                    </Link>
                 </div>
 
                 {/* MAIN CONTENT */}
@@ -193,22 +186,26 @@ const Riwayat = props => {
                         <table className="w-full text-purple-500 text-xl">
                             <thead className="border-2 border-purple-500 rounded-lg">
                                 <tr>
-                                    <th>Nota(ID)</th>
-                                    <th>Tanggal</th>
-                                    <th>Total Penjualan</th>
+                                    <th>Nama Barang</th>
+                                    <th>Distributor</th>
+                                    <th>QTY</th>
+                                    <th>Tanggal Pembelian</th>
+                                    <th>Tanggal Expired</th>
+                                    <th>Total Pengeluaran</th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody className="border-2 border-purple-500">
                                 {/* LOOP AT TR */}
-                                {Riwayat.length > 0 &&
-                                    Riwayat.map((data, index) => {
-                                        return <ItemsComponent key={data.id} data={data} />
+                                {StokBarang.length > 0 &&
+                                    StokBarang.map((data, index) => {
+                                        return <ItemsComponent data={data} />
                                     })
                                 }
                             </tbody>
                         </table>
                     </div>
+
                     <div className="flex flex-col w-52">
                         {/* <button ref={filterBtnRef} onClick={() => { toggleBtn(filterBtnRef); toggleBtn(filterRef) }} className="h-12 ml-2 flex items-center border-2 border-purple-500 rounded-lg p-3 text-purple-500 text-xl font-bold bg-white focus:outline-none">
                             <img src={icon_filter} className="h-8 mr-2" />
@@ -258,15 +255,16 @@ const Riwayat = props => {
     )
 }
 
-Riwayat.propTypes = {
+StokBarang.propTypes = {
 
 }
 
 const mapStateToProps = state => {
     return {
-        penjualan: state.penjualan
+        distributor: state.distributor,
+        barang: state.barang,
     }
 }
 
 
-export default compose(connect(mapStateToProps))(Riwayat)
+export default compose(connect(mapStateToProps))(StokBarang)

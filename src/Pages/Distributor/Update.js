@@ -66,6 +66,10 @@ const UpdateDistributor = props => {
                 } else {
 
                     await refDistributor.doc(Values.id).set(Values)
+                    await props.dispatch(notification({ isSuccess: true, msg: 'Data berhasil di Update!' }))
+                    setTimeout(async () => {
+                        await props.dispatch(notification({ isSuccess: false, msg: '' }))
+                    }, 3000);
                     setValues({
                         nama_distributor: '',
                         alamat: '',
@@ -74,10 +78,7 @@ const UpdateDistributor = props => {
                     history.push('/distributor')
                 }
 
-                await props.dispatch(notification({ isSuccess: true, msg: 'Data berhasil di Update!' }))
-                setTimeout(async () => {
-                    await props.dispatch(notification({ isSuccess: false, msg: '' }))
-                }, 3000);
+
             } catch (error) {
                 console.log('/distributor/update')
                 console.log(error)
